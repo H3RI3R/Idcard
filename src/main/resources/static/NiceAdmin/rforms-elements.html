@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+  <title>Forms / Elements </title>
+  <meta content="" name="description">
+  <meta content="" name="keywords">
+
+  <!-- Favicons -->
+  <link href="assets/img/favicon.png" rel="icon">
+  <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.gstatic.com" rel="preconnect">
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="assets/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
+  <link href="assets/vendor/quill/quill.snow.css" rel="stylesheet">
+  <link href="assets/vendor/quill/quill.bubble.css" rel="stylesheet">
+  <link href="assets/vendor/remixicon/remixicon.css" rel="stylesheet">
+  <link href="assets/vendor/simple-datatables/style.css" rel="stylesheet">
+
+  <!-- Template Main CSS File -->
+  <link href="assets/css/style.css" rel="stylesheet">
+
+  <!-- =======================================================
+  * Template Name: NiceAdmin
+  * Template URL: https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/
+  * Updated: Apr 20 2024 with Bootstrap v5.3.3
+  * Author: BootstrapMade.com
+  * License: https://bootstrapmade.com/license/
+  ======================================================== -->
+</head>
+
+<body>
+
+<!-- ======= Header ======= -->
+<header id="header" class="header fixed-top d-flex align-items-center">
+
+  <div class="d-flex align-items-center justify-content-between">
+    <a href="rindex.html" class="logo d-flex align-items-center">
+      <img src="assets/img/logo.png" alt="">
+      <span class="d-none d-lg-block">IdCard</span>
+    </a>
+    <i class="bi bi-list toggle-sidebar-btn"></i>
+  </div><!-- End Logo -->
+
+
+  <nav class="header-nav ms-auto">
+
+    <ul class="d-flex align-items-center">
+
+
+
+      <!-- End Notification Nav -->
+
+      <!-- End Messages Nav -->
+      <li class="nav-item dropdown pe-3">
+
+        <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
+          <img src="assets/img/profile-img.jpg" alt="Profile" class="rounded-circle">
+          <span class="d-none d-md-block dropdown-toggle ps-2"><span id="userEmail"></span></span>
+        </a><!-- End Profile Iamge Icon -->
+
+        <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
+          <li class="dropdown-header">
+            <h6><span id="userEmail1"></span></h6>
+            <span>Web Designer</span>
+          </li>
+          <li>
+            <hr class="dropdown-divider">
+          </li>
+
+          <li>
+            <a class="dropdown-item d-flex align-items-center" href="rusers-profile.html">
+              <i class="bi bi-person"></i>
+              <span>My Profile</span>
+            </a>
+          </li>
+          <li>
+            <hr class="dropdown-divider">
+          </li>
+
+
+          <li>
+            <hr class="dropdown-divider">
+          </li>
+
+
+          <li>
+            <hr class="dropdown-divider">
+          </li>
+
+          <li>
+            <a class="dropdown-item d-flex align-items-center" href="#" id="logoutBtn">
+              <i class="bi bi-box-arrow-right"></i>
+              <span>Sign Out</span>
+            </a>
+          </li>
+
+        </ul><!-- End Profile Dropdown Items -->
+      </li><!-- End Profile Nav -->
+
+    </ul>
+  </nav><!-- End Icons Navigation -->
+
+</header><!-- End Header -->
+
+<!-- ======= Sidebar ======= -->
+<aside id="sidebar" class="sidebar">
+
+  <ul class="sidebar-nav" id="sidebar-nav">
+
+    <li class="nav-item">
+      <a class="nav-link collapsed" href="rindex.html">
+        <i class="bi bi-grid"></i>
+        <span>Dashboard</span>
+      </a>
+    </li><!-- End Dashboard Nav -->
+
+
+
+    <li class="nav-item">
+      <a class="nav-link " data-bs-target="#forms-nav" data-bs-toggle="collapse" href="#">
+        <i class="bi bi-journal-text"></i><span>Manage IDCard</span><i class="bi bi-chevron-down ms-auto"></i>
+      </a>
+      <ul id="forms-nav" class="nav-content collapse show" data-bs-parent="#sidebar-nav">
+        <li>
+          <a href="rforms-elements.html" class="active">
+            <i class="bi bi-circle"></i><span>Create IDCard</span>
+          </a>
+        </li>
+        <li>
+          <a href="rShowRetailer.html" >
+            <i class="bi bi-circle"></i><span>IDCard History</span>
+          </a>
+        </li>
+      </ul>
+
+
+    <li class="nav-item">
+      <a class="nav-link collapsed " data-bs-target="#report-nav" data-bs-toggle="collapse" href="#">
+        <i class="bi bi-journal-text"></i><span>Manage Report</span><i class="bi bi-chevron-down ms-auto"></i>
+      </a>
+      <ul id="report-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+        <li>
+          <a href="rReport.html">
+            <i class="bi bi-circle"></i><span>IDCard Creation Report</span>
+          </a>
+        </li>
+        <li>
+          <a href="rTokenReceiptReport.html">
+            <i class="bi bi-circle"></i><span>Token Receipt Report</span>
+          </a>
+        </li>
+        <li>
+          <a href="rActivityLog.html">
+            <i class="bi bi-circle"></i><span>Activity Log</span>
+          </a>
+        </li>
+        <li>
+          <a href="rSuccessFailure.html">
+            <i class="bi bi-circle"></i><span>Success/Failure Report</span>
+          </a>
+        </li>
+      </ul>
+    </li>
+
+    <li class="nav-item">
+      <a class="nav-link collapsed " data-bs-target="#Token-nav" data-bs-toggle="collapse" href="#">
+        <i class="bi bi-journal-text"></i><span>Manage Token</span><i class="bi bi-chevron-down ms-auto"></i>
+      </a>
+      <ul id="Token-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+        <li>
+          <a href="rToken.html">
+            <i class="bi bi-circle"></i><span>Show Token</span>
+          </a>
+        </li>
+        <li>
+          <a href="rTokenCreate.html" >
+            <i class="bi bi-circle"></i><span>Request Token</span>
+          </a>
+        </li>
+      </ul>
+    </li>
+    <li class="nav-heading">Pages</li>
+    <li class="nav-item">
+      <a class="nav-link collapsed" href="rusers-profile.html">
+        <i class="bi bi-person"></i>
+        <span>Profile</span>
+      </a>
+    </li><!-- End Profile Page Nav -->
+  </ul>
+</aside><!-- End Sidebar-->
+
+<main id="main" class="main">
+
+  <div class="pagetitle">
+    <h1>Create IDCard</h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="rindex.html">Home</a></li>
+        <li class="breadcrumb-item">Manage IDCard</li>
+        <li class="breadcrumb-item active">Create IDCard</li>
+      </ol>
+    </nav>
+  </div><!-- End Page Title -->
+
+  <section class="section">
+    <div class="row">
+      <div class="page-content-wrapper p-xxl-4" style="height: auto !important; min-height: 0px !important;">
+        <div class="row"><div class="col-12 mb-4 mb-sm-5">
+          <div class="d-sm-flex justify-content-between align-items-center">
+            <h1 class="h3 mb-2 mb-sm-0 text-capitalize d-flex align-items-center">
+              <i class="bi bi-person-badge fa-fw me-1 me-3">
+              </i> Identity Cards</h1>
+          </div>
+        </div>
+        </div>
+        <div class="row g-4" style="height: auto !important;">
+          <div class="col-md-6">
+            <div class="card border">
+              <div class="card-header align-items-center border-bottom p-4">
+                <h4 class="mb-0 text-center">Designer</h4>
+              </div>
+              <div class="card-body">
+                <div class="row mb-3">
+                  <div class="col-12">
+                    <label class="form-label">Templates</label>
+                    <select class="form-select" id="template" name="template">
+                      <option value="assets/img/id002-a.png" selected>School 1 - Blue</option>
+                      <option value="https://temp15445.blr1.digitaloceanspaces.com/idmaker/student_id/template/id002-b.png">
+                        School 1 - Red</option>
+                      <option value="https://temp15445.blr1.digitaloceanspaces.com/idmaker/student_id/template/id002-c.png">
+                        School 1 - Green</option>
+                      <option value="https://temp15445.blr1.digitaloceanspaces.com/idmaker/student_id/template/id002-d.png">
+                        School 1 - Orange</option>
+                      <option value="https://temp15445.blr1.digitaloceanspaces.com/idmaker/student_id/template/id002-e.png">
+                        School 1 - Yellow</option>
+                      <option value="https://temp15445.blr1.digitaloceanspaces.com/idmaker/student_id/template/id003-a.png">
+                        School 2 - Blue</option>
+                      <option value="https://temp15445.blr1.digitaloceanspaces.com/idmaker/student_id/template/id003-b.png">
+                        School 2 - Red</option>
+                      <option value="https://temp15445.blr1.digitaloceanspaces.com/idmaker/student_id/template/id003-c.png">
+                        School 2 - Green</option>
+                      <option value="https://temp15445.blr1.digitaloceanspaces.com/idmaker/student_id/template/id003-d.png">
+                        School 2 - Orange</option>
+                      <option value="https://temp15445.blr1.digitaloceanspaces.com/idmaker/student_id/template/id003-e.png">
+                        School 2 - Yellow</option>
+                      <option value="https://temp15445.blr1.digitaloceanspaces.com/idmaker/student_id/template/id004-a.png">
+                        School 3 - Blue</option>
+                      <option value="https://temp15445.blr1.digitaloceanspaces.com/idmaker/student_id/template/id004-b.png">
+                        School 3 - Red</option>
+                      <option value="https://temp15445.blr1.digitaloceanspaces.com/idmaker/student_id/template/id004-c.png">
+                        School 3 - Green</option>
+                      <option value="https://temp15445.blr1.digitaloceanspaces.com/idmaker/student_id/template/id004-d.png">
+                        School 3 - Orange</option>
+                      <option value="https://temp15445.blr1.digitaloceanspaces.com/idmaker/student_id/template/id004-e.png">
+                        School 3 - Yellow</option>
+                      <option value="https://temp15445.blr1.digitaloceanspaces.com/idmaker/student_id/template/id005-a.png">
+                        School 4 - Blue</option>
+                      <option value="https://temp15445.blr1.digitaloceanspaces.com/idmaker/student_id/template/id005-b.png">
+                        School 4 - Red</option>
+                      <option value="https://temp15445.blr1.digitaloceanspaces.com/idmaker/student_id/template/id005-c.png">
+                        School 4 - Green</option>
+                      <option value="https://temp15445.blr1.digitaloceanspaces.com/idmaker/student_id/template/id005-d.png">
+                        School 4 - Orange</option>
+                      <option value="https://temp15445.blr1.digitaloceanspaces.com/idmaker/student_id/template/id005-e.png">
+                        School 4 - Yellow</option>
+                      <option value="https://temp15445.blr1.digitaloceanspaces.com/idmaker/student_id/template/id007-a.png">
+                        School 5 - Blue</option>
+                      <option value="https://temp15445.blr1.digitaloceanspaces.com/idmaker/student_id/template/id007-b.png">
+                        School 5 - Red</option><option value="https://temp15445.blr1.digitaloceanspaces.com/idmaker/student_id/template/id007-c.png">School 5 - Green</option>
+                      <option value="https://temp15445.blr1.digitaloceanspaces.com/idmaker/student_id/template/id007-d.png">
+                        School 5 - Orange</option>
+                      <option value="https://temp15445.blr1.digitaloceanspaces.com/idmaker/student_id/template/id007-e.png">
+                        School 5 - Yellow</option>
+                      <option value="https://temp15445.blr1.digitaloceanspaces.com/idmaker/student_id/template/id008-a.png">
+                        School 6 - Blue</option>
+                      <option value="https://temp15445.blr1.digitaloceanspaces.com/idmaker/student_id/template/id008-b.png">
+                        School 6 - Red</option>
+                      <option value="https://temp15445.blr1.digitaloceanspaces.com/idmaker/student_id/template/id008-c.png">
+                        School 6 - Green</option>
+                      <option value="https://temp15445.blr1.digitaloceanspaces.com/idmaker/student_id/template/id008-d.png">
+                        School 6 - Orange</option>
+                      <option value="https://temp15445.blr1.digitaloceanspaces.com/idmaker/student_id/template/id008-e.png">
+                        School 6 - Yellow</option>
+                      <option value="https://temp15445.blr1.digitaloceanspaces.com/idmaker/student_id/template/id009-a.png">
+                        School 7 - Blue</option>
+                      <option value="https://temp15445.blr1.digitaloceanspaces.com/idmaker/student_id/template/id009-b.png">
+                        School 7 - Red</option>
+                      <option value="https://temp15445.blr1.digitaloceanspaces.com/idmaker/student_id/template/id009-c.png">
+                        School 7 - Green</option>
+                      <option value="https://temp15445.blr1.digitaloceanspaces.com/idmaker/student_id/template/id009-d.png">
+                        School 7 - Orange</option>
+                      <option value="https://temp15445.blr1.digitaloceanspaces.com/idmaker/student_id/template/id009-e.png">
+                        School 7 - Yellow</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="row mb-3 border-bottom">
+                  <div class="mb-3 col-4">
+                    <label class="form-label">Header</label>
+                    <input type="color" name="header_color" class="form-control" value="#6F6F6F" style="height: 45px;">
+                  </div>
+                  <div class="mb-3 col-4">
+                    <label class="form-label">Data</label>
+                    <input type="color" name="data_color" class="form-control" value="#6F6F6F" style="height: 45px;">
+                  </div>
+                  <div class="mb-3 col-4">
+                    <label class="form-label">Footer</label>
+                    <input type="color" name="footer_color" class="form-control" value="#6F6F6F" style="height: 45px;">
+                  </div>
+                </div>
+                <div class="row mb-3 border-bottom">
+                  <div class="mb-3 col-md-6">
+                    <label class="form-label">Photo</label>
+                    <input type="file" name="photo" class="form-control" required="">
+                  </div>
+                  <div class="mb-3 col-md-6">
+                    <label class="form-label">Logo</label>
+                    <input type="file" name="logo" class="form-control" required="">
+                  </div><div class="mb-3 col-md-6">
+                  <label class="form-label">Sign</label>
+                  <input type="file" name="sign" class="form-control" required="">
+                </div><div class="mb-3 col-md-6">
+                  <label class="form-label">Principal Signature Name</label>
+                  <input type="text" name="principal_sign_placeholder" class="form-control" placeholder="Principal Signature Name" value="Principal Sign">
+                </div>
+                </div>
+                <div class="row">
+                  <div class="mb-3 col-md-6 col-6">
+                    <label class="form-label">School Name</label>
+                    <input type="text" name="school_name" placeholder="School Name" class="form-control">
+                  </div>
+                  <div class="mb-3 col-md-6 col-6">
+                    <label class="form-label">School Sub Title</label>
+                    <input type="text" name="school_sub_title" placeholder="School Sub Title" class="form-control">
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="mb-3 col-md-4 col-sm-6 col-6">
+                    <label class="form-label">Name</label>
+                    <input type="text" name="name" placeholder="Name" class="form-control" id="nameInput">
+                  </div>
+                <div class="mb-3 col-md-4 col-sm-6 col-6"><label class="form-label">Father</label><input type="text" name="father" placeholder="Father" class="form-control"></div><div class="mb-3 col-md-4 col-sm-6 col-6"><label class="form-label">Mother</label><input type="text" name="mother" placeholder="Mother" class="form-control"></div><div class="mb-3 col-md-4 col-sm-6 col-6"><label class="form-label">Class</label><input type="text" name="class" placeholder="Class" class="form-control"></div><div class="mb-3 col-md-4 col-sm-6 col-6"><label class="form-label">DOB</label><input type="text" name="dob" placeholder="DOB" class="form-control"></div><div class="mb-3 col-md-4 col-sm-6 col-6"><label class="form-label">Roll No</label><input type="text" name="roll_no" placeholder="Roll No" class="form-control"></div></div><div class="row"><div class="mb-3 col"><label class="form-label">Address</label><input type="text" name="address" placeholder="Address" class="form-control"></div></div><div class="row"><div class="mb-3 col-md-4 col-sm-6 col-6"><label class="form-label">Phone</label><input type="text" name="phone" placeholder="Phone" class="form-control"></div><div class="mb-3 col-md-4 col-sm-6 col-6"><label class="form-label">Session</label><input type="text" name="session" placeholder="Session" class="form-control"></div><div class="mb-3 col-md-4 col-sm-6 col-6"><label class="form-label">Addmission No</label><input type="text" name="addmission_no" placeholder="Addmission No" class="form-control"></div></div><div class="row"><div class="mb-3 col"><label class="form-label">School Contact</label><input type="text" name="school_contact" placeholder="School Contact" class="form-control"></div></div><div class="row"><div class="mb-3 col-md-6 col-6"><label class="form-label">Key 1</label><input type="text" name="key_1" placeholder="Key 1" class="form-control"></div><div class="mb-3 col-md-6 col-6"><label class="form-label">Value 1</label><input type="text" name="value_1" placeholder="Value 1" class="form-control"></div></div><div class="row"><div class="mb-3 col-md-6 col-6"><label class="form-label">Key 2</label><input type="text" name="key_2" placeholder="Key 2" class="form-control"></div><div class="mb-3 col-md-6 col-6"><label class="form-label">Value 2</label><input type="text" name="value_2" placeholder="Value 2" class="form-control"></div></div><div class="row"><div class="mb-3 col-md-6 col-6"><label class="form-label">Key 3</label><input type="text" name="key_3" placeholder="Key 3" class="form-control"></div><div class="mb-3 col-md-6 col-6"><label class="form-label">Value 3</label><input type="text" name="value_3" placeholder="Value 3" class="form-control"></div></div><div class="row"><div class="mb-3 col-md-6 col-6"><label class="form-label">Key 4</label><input type="text" name="key_4" placeholder="Key 4" class="form-control"></div><div class="mb-3 col-md-6 col-6"><label class="form-label">Value 4</label><input type="text" name="value_4" placeholder="Value 4" class="form-control"></div></div><div class="row"><div class="mb-3 col-md-6 col-6"><label class="form-label">Key 5</label><input type="text" name="key_5" placeholder="Key 5" class="form-control"></div><div class="mb-3 col-md-6 col-6"><label class="form-label">Value 5</label><input type="text" name="value_5" placeholder="Value 5" class="form-control"></div></div><div class="row"><div class="mb-3 col-md-6 col-6"><label class="form-label">Key 6</label><input type="text" name="key_6" placeholder="Key 6" class="form-control"></div><div class="mb-3 col-md-6 col-6"><label class="form-label">Value 6</label><input type="text" name="value_6" placeholder="Value 6" class="form-control"></div></div></div></div></div><div class="col"><div class="card border"><div class="card-header border-bottom"><h5 class="card-header-title">Card Preview</h5><p class="mb-0 small">  </p></div>
+
+          <div class="card-body">
+            <canvas id="idCardCanvas" height="638" width="1016" style="background: white; width: 100%;"></canvas>
+          </div>
+          <div class="card-footer border-top">
+            <div class="text-center mt-3">
+              <button class="btn btn-primary fs-5 iframe-download-btn me-3" type="button">
+                <span class="fa fa-download me-2" aria-hidden="true"></span><span role="status">
+                Image
+              </span>
+              </button>
+              <button class="btn btn-primary fs-5 iframe-download-btn ms-3" type="button">
+                <span class="fa fa-download me-2" aria-hidden="true">
+
+                </span>
+                <span role="status"> pdf</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        </div>
+         </div>
+      </div>
+    </div>
+  </section>
+
+</main><!-- End #main -->
+
+<!-- ======= Footer ======= -->
+<footer id="footer" class="footer">
+  <div class="copyright">
+    &copy; Copyright <strong><span>Idcard</span></strong>. All Rights Reserved
+  </div>
+  <div class="credits">
+    <!-- All the links in the footer should remain intact. -->
+    <!-- You can delete the links only if you purchased the pro version. -->
+    <!-- Licensing information: https://bootstrapmade.com/license/ -->
+    <!-- Purchase the pro version with working PHP/AJAX contact form: https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/ -->
+    Designed by <a href="https://scriza.in/">Scriza</a>
+  </div>
+</footer><!-- End Footer -->
+
+<a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+<!-- Vendor JS Files -->
+<script src="assets/vendor/apexcharts/apexcharts.min.js"></script>
+<script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="assets/vendor/chart.js/chart.umd.js"></script>
+<script src="assets/vendor/echarts/echarts.min.js"></script>
+<script src="assets/vendor/quill/quill.js"></script>
+<script src="assets/vendor/simple-datatables/simple-datatables.js"></script>
+<script src="assets/vendor/tinymce/tinymce.min.js"></script>
+<script src="assets/vendor/php-email-form/validate.js"></script>
+
+<!-- Template Main JS File -->
+<!--  <script src="assets/js/main.js"></script>-->
+<script src = "rforms-elements.js"></script>
+
+
+</body>
+
+</html>
