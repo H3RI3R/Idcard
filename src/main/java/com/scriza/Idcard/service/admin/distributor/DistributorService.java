@@ -2,9 +2,11 @@ package com.scriza.Idcard.service.admin.distributor;
 
 import com.scriza.Idcard.Entity.User;
 import com.scriza.Idcard.Entity.admin.Token.Token;
+import com.scriza.Idcard.Entity.admin.TransactionRequest;
 import com.scriza.Idcard.Entity.admin.distributor.ActivityAdmin;
 import com.scriza.Idcard.Repository.UserRepository;
 import com.scriza.Idcard.Repository.admin.Token.TokenRepository;
+import com.scriza.Idcard.Repository.admin.TransactionRequestRepository;
 import com.scriza.Idcard.Repository.admin.distributor.ActivityRepositoryAdmin;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,6 +24,8 @@ public class DistributorService {
     private TokenRepository tokenRepository;
     @Autowired
     private ActivityRepositoryAdmin activityRepositoryAdmin;
+    @Autowired
+    private TransactionRequestRepository transactionRequestRepository;
 
     private static final String ALPHANUMERIC = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     private static final SecureRandom RANDOM = new SecureRandom();
@@ -228,5 +232,20 @@ public class DistributorService {
             sb.append(ALPHANUMERIC.charAt(RANDOM.nextInt(ALPHANUMERIC.length())));
         }
         return sb.toString();
+    }
+    public void saveTransactionRequest(TransactionRequest request) {
+        transactionRequestRepository.save(request);
+    }
+
+    public List<TransactionRequest> getTransactionRequestsByCreatorEmail(String creatorEmail) {
+        return transactionRequestRepository.findByCreatorEmailOrderByTimestampDesc(creatorEmail);
+    }
+    public List<TransactionRequest> getTransactionRequestsByUserEmail(String userEmail) {
+        return transactionRequestRepository.findByUserEmailOrderByTimestampDesc(userEmail);
+    }
+
+
+    public TransactionRequest getTransactionRequestByTransactionId(String transactionId) {
+        return transactionRequestRepository.findByTransactionId(transactionId);
     }
 }

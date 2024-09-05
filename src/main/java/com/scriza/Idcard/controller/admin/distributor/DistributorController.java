@@ -1,21 +1,22 @@
 package com.scriza.Idcard.controller.admin.distributor;
 
 import com.scriza.Idcard.Entity.User;
+import com.scriza.Idcard.Entity.admin.TransactionRequest;
 import com.scriza.Idcard.Entity.admin.distributor.ActivityAdmin;
 import com.scriza.Idcard.Entity.admin.distributor.ActivityDis;
+import com.scriza.Idcard.Entity.admin.retailer.Activity;
 import com.scriza.Idcard.Repository.UserRepository;
 import com.scriza.Idcard.Repository.admin.distributor.ActivityRepositoryAdmin;
 import com.scriza.Idcard.Repository.admin.distributor.ActivityRepositoryDis;
+import com.scriza.Idcard.Repository.admin.retailer.ActivityRepository;
 import com.scriza.Idcard.service.admin.distributor.DistributorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/admin/distributor")
@@ -27,6 +28,8 @@ public class DistributorController {
     private ActivityRepositoryDis activityRepositoryDis;
     @Autowired
     private ActivityRepositoryAdmin activityRepositoryAdmin;
+    @Autowired
+    private ActivityRepository activityRepository;
 
     @GetMapping("/name")
     public ResponseEntity<Map<String, String>> getNameByEmail(@RequestParam String email) {
@@ -142,5 +145,142 @@ public class DistributorController {
     public Iterable<User> listDistributors() {
         return distributorService.listDistributors();
     }
+    @PostMapping("/createTransactionRequest")
+    public ResponseEntity<Map<String, String>> createTransactionRequest(
+            @RequestParam String email,
+            @RequestParam double amount,
+            @RequestParam String transactionId) {
+        try {
+            // Fetch the user's details from the User entity
+            User user = distributorService.getUserByEmail(email);
+            if (user == null) {
+                throw new RuntimeException("User not found");
+            }
+            // Get the creator's email (who will receive the request)
+            String creatorEmail = user.getCreatorEmail();
+            // Create a new transaction request
+            TransactionRequest request = new TransactionRequest();
+            request.setUserEmail(email);
+            request.setAmount(amount);
+            request.setTransactionId(transactionId);
+            request.setStatus("Pending"); // Initial status
+            request.setTimestamp(new Date());
+            request.setCreatorEmail(creatorEmail);
+
+            // Save the transaction request
+            distributorService.saveTransactionRequest(request);
+
+            // Log activity for the distributor
+            String distributorRole = user.getRole();
+            String activityDescription = distributorRole.equalsIgnoreCase("RETAILER") ?
+                    "Retailer requested tokens: " + amount :
+                    "Distributor requested tokens: " + amount;
+
+            // Log activity for the distributor
+            logActivityDis(distributorRole + "_TOKEN_REQUEST", activityDescription, creatorEmail); // For the distributor
+
+            // Log activity for the retailer
+            logActivityRetailer(distributorRole + "_TOKEN_REQUEST", activityDescription, email); // For the retailer
+
+            // Return a successful response
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Transaction request created successfully");
+            return ResponseEntity.ok(response);
+
+        } catch (RuntimeException e) {
+            Map<String, String> response = new HashMap<>();
+            response.put("error", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }
+    }
+
+    public void logActivityDis(String type, String description, String userEmail) {
+        ActivityDis activity = new ActivityDis();
+        activity.setType(type);
+        activity.setDescription(description);
+        activity.setTimestamp(new Date());
+        activity.setUserEmail(userEmail);
+        activityRepositoryDis.save(activity);
+    }
+
+    public void logActivityRetailer(String type, String description, String userEmail) {
+        Activity activity = new Activity();
+        activity.setType(type);
+        activity.setDetails(description);
+        activity.setTimestamp(new Date().toString()); // Assuming timestamp is stored as String
+        activity.setUserEmail(userEmail);
+        activityRepository.save(activity);
+    }
+    @GetMapping("/getTransactionRequests")
+    public ResponseEntity<List<TransactionRequest>> getTransactionRequests(@RequestParam String creatorEmail) {
+        try {
+            // Fetch all transaction requests for the given creator
+            List<TransactionRequest> requestsByCreator = distributorService.getTransactionRequestsByCreatorEmail(creatorEmail);
+
+            // Fetch all transaction requests for the given userEmail
+            List<TransactionRequest> requestsByUserEmail = distributorService.getTransactionRequestsByUserEmail(creatorEmail);
+
+            // Combine both lists
+            List<TransactionRequest> combinedRequests = new ArrayList<>();
+            combinedRequests.addAll(requestsByCreator);
+            combinedRequests.addAll(requestsByUserEmail);
+
+            if (combinedRequests.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NO_CONTENT).body(combinedRequests);
+            }
+
+            // Return the combined list of requests
+            return ResponseEntity.ok(combinedRequests);
+
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+    }
+    @PostMapping("/updateTransactionStatus")
+    public ResponseEntity<Map<String, String>> updateTransactionStatus(
+            @RequestParam String transactionId,
+            @RequestParam String status) {
+        try {
+            // Validate the status (it should be either "Accepted" or "Rejected")
+            if (!status.equalsIgnoreCase("Accepted") && !status.equalsIgnoreCase("Rejected")) {
+                throw new RuntimeException("Invalid status value. Use 'Accepted' or 'Rejected'.");
+            }
+
+            // Fetch the transaction request by transactionId
+            TransactionRequest request = distributorService.getTransactionRequestByTransactionId(transactionId);
+            if (request == null) {
+                throw new RuntimeException("Transaction request not found");
+            }
+
+            // Update the status of the transaction request
+            request.setStatus(status);
+            distributorService.saveTransactionRequest(request);
+
+            // Log activity for the distributor (creator)
+            String activityDescription = status.equalsIgnoreCase("Accepted") ?
+                    "Transaction request accepted for: " + request.getAmount() :
+                    "Transaction request rejected for: " + request.getAmount();
+
+            logActivityDis(request.getCreatorEmail() + "_TRANSACTION_" + status.toUpperCase(),
+                    activityDescription, request.getCreatorEmail());
+
+            // Log activity for the retailer/distributor (user)
+            logActivityRetailer(request.getUserEmail() + "_TRANSACTION_" + status.toUpperCase(),
+                    activityDescription, request.getUserEmail());
+
+            // Return a successful response
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Transaction request " + status.toLowerCase() + " successfully");
+            return ResponseEntity.ok(response);
+
+        } catch (RuntimeException e) {
+            // Return an error response if anything fails
+            Map<String, String> response = new HashMap<>();
+            response.put("error", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }
+    }
+
+
 }
 
