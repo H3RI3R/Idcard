@@ -808,6 +808,15 @@
     const transactionTableBody = document.getElementById('transactionTableBody');
     const searchInput = document.getElementById('searchTransactionId');
     const refreshButton = document.getElementById('refreshButton');
+    const tokenPlanMap = {
+      22: 10,
+      55: 25,
+      110: 50,
+      220: 100,
+      385: 175,
+      550: 250,
+      1100: 500
+    };
 
     function fetchAndDisplayTransactions() {
       fetch(`http://localhost:8080/api/admin/distributor/getTransactionRequests?creatorEmail=${userEmail}&userEmail=${userEmail}`)
@@ -859,7 +868,7 @@
                             <td>${type}</td>
                             <td>
                                 ${transaction.status === 'Pending' && type === 'Request Received' ? `
-                                    <button class="btn btn-sm btn-success me-2" onclick="updateStatus('${transaction.transactionId}', 'Accepted')">Accept</button>
+                                    <button class="btn btn-sm btn-success me-2" onclick="updateStatusAndSendToken('${transaction.transactionId}', 'Accepted', ${transaction.amount}, '${transaction.userEmail}')">Accept</button>
                                     <button class="btn btn-sm btn-danger" onclick="updateStatus('${transaction.transactionId}', 'Rejected')">Reject</button>
                                 ` : ''}
                             </td>
@@ -879,18 +888,15 @@
         .then(response => response.json())
         .then(data => {
         if (data.message) {
-          // Show success message
           Swal.fire({
             icon: 'success',
             title: 'Success',
             text: data.message,
             confirmButtonText: 'OK'
           }).then(() => {
-            // Update the table after successful status update
-            fetchAndDisplayTransactions();
+            fetchAndDisplayTransactions(); // Refresh the table
           });
         } else {
-          // Show error message if any
           Swal.fire({
             icon: 'error',
             title: 'Error',
@@ -904,6 +910,47 @@
           icon: 'error',
           title: 'Error',
           text: 'An error occurred while updating the status',
+          confirmButtonText: 'OK'
+        });
+        console.error('Error:', error);
+      });
+    }
+
+    // Function to update transaction status and send token
+    window.updateStatusAndSendToken = function(transactionId, status, amount, recipientEmail) {
+      // First update the status
+      updateStatus(transactionId, status);
+
+      // Get the token amount for the selected plan
+      const tokenAmount = tokenPlanMap[amount];
+
+      // Then send the token to the recipient
+      fetch(`http://localhost:8080/api/admin/token/send?senderIdentifier=${userEmail}&amount=${tokenAmount}&recipient=${recipientEmail}`, {
+        method: 'POST'
+      })
+        .then(response => response.json())
+        .then(data => {
+        if (data.message) {
+          Swal.fire({
+            icon: 'success',
+            title: 'Success',
+            text: 'Token sent successfully!',
+            confirmButtonText: 'OK'
+          });
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: data.error || 'An error occurred while sending the token',
+            confirmButtonText: 'OK'
+          });
+        }
+      })
+        .catch(error => {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'An error occurred while sending the token',
           confirmButtonText: 'OK'
         });
         console.error('Error:', error);

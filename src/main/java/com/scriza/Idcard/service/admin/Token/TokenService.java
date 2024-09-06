@@ -91,30 +91,44 @@ public class TokenService {
         activityRepositoryAdmin.save(activity);
     }
     public String sendToken(String senderIdentifier, int amount, String recipient) {
-        // Determine if senderIdentifier is a phone number or wallet address
-        Token senderToken;
-        if (senderIdentifier.matches("\\d+")) { // If senderIdentifier contains only digits, assume it's a phone number
+        Token senderToken = null;
+
+        // Check if senderIdentifier is a phone number, wallet address, or email
+        if (senderIdentifier.matches("\\d+")) {
+            // If senderIdentifier contains only digits, assume it's a phone number
             senderToken = tokenRepository.findByPhoneNumber(senderIdentifier)
                     .orElseThrow(() -> new RuntimeException("Sender token not found"));
-        } else { // Otherwise, assume it's a wallet address
+        } else if (senderIdentifier.contains("@")) {
+            // If senderIdentifier contains '@', assume it's an email
+            senderToken = tokenRepository.findByUserEmail(senderIdentifier);
+            if (senderToken == null) {
+                throw new RuntimeException("Sender token not found");
+            }
+        } else {
+            // Otherwise, assume it's a wallet address
             senderToken = tokenRepository.findByWalletAddress(senderIdentifier)
                     .orElseThrow(() -> new RuntimeException("Sender token not found"));
         }
 
-        // Fetch the sender's phone number
-        String senderPhoneNumber = senderToken.getPhoneNumber();
-
-        // Determine if recipient is a phone number or wallet address
-        Token recipientToken;
-        if (recipient.matches("\\d+")) { // If the recipient contains only digits, assume it's a phone number
+        // Check if recipient is a phone number, wallet address, or email
+        Token recipientToken = null;
+        if (recipient.matches("\\d+")) {
+            // If recipient contains only digits, assume it's a phone number
             recipientToken = tokenRepository.findByPhoneNumber(recipient)
                     .orElseThrow(() -> new RuntimeException("Recipient token not found"));
-        } else { // Otherwise, assume it's a wallet address
+        } else if (recipient.contains("@")) {
+            // If recipient contains '@', assume it's an email
+            recipientToken = tokenRepository.findByUserEmail(recipient);
+            if (recipientToken == null) {
+                throw new RuntimeException("Recipient token not found");
+            }
+        } else {
+            // Otherwise, assume it's a wallet address
             recipientToken = tokenRepository.findByWalletAddress(recipient)
                     .orElseThrow(() -> new RuntimeException("Recipient token not found"));
         }
 
-        // Get sender and recipient users by their email addresses
+        // Fetch the sender and recipient users by their email addresses
         User senderUser = userRepository.findByEmail(senderToken.getUserEmail());
         User recipientUser = userRepository.findByEmail(recipientToken.getUserEmail());
 
@@ -122,7 +136,7 @@ public class TokenService {
             throw new RuntimeException("User not found");
         }
 
-        // Check roles and permissions
+        // Role-based validation
         if (senderUser.getRole().equals("ADMIN")) {
             if (!recipientUser.getRole().equals("RETAILER") && !recipientUser.getRole().equals("DISTRIBUTOR")) {
                 throw new RuntimeException("Admins can only send tokens to retailers or distributors");
@@ -132,7 +146,6 @@ public class TokenService {
                 throw new RuntimeException("Distributors can only send tokens to retailers");
             }
 
-            // Check if the recipient retailer was created by the distributor
             if (!recipientUser.getCreatorEmail().equals(senderToken.getUserEmail())) {
                 throw new RuntimeException("This retailer was not created by you.");
             }
@@ -140,7 +153,7 @@ public class TokenService {
             throw new RuntimeException("Only admins and distributors can send tokens");
         }
 
-        // Check token balance and perform the transfer
+        // Check token balance and transfer tokens
         if (senderToken.getTokenAmount() >= amount) {
             // Deduct tokens from sender
             int senderOpeningBalance = senderToken.getTokenAmount();
@@ -152,14 +165,12 @@ public class TokenService {
             recipientToken.setTokenAmount(recipientToken.getTokenAmount() + amount);
             tokenRepository.save(recipientToken);
 
-            // Generate unique transaction ID
+            // Log transaction
             String transactionId = generateUniqueTransactionId();
-
-            // Record transaction
             TokenTransaction transaction = new TokenTransaction();
             transaction.setTransactionId(transactionId);
-            transaction.setSenderWalletAddress(senderToken.getWalletAddress()); // Always set the wallet address
-            transaction.setSenderPhoneNumber(senderPhoneNumber); // Set the sender's phone number
+            transaction.setSenderWalletAddress(senderToken.getWalletAddress());
+            transaction.setSenderPhoneNumber(senderToken.getPhoneNumber());
             transaction.setRecipientWalletAddress(recipientToken.getWalletAddress());
             transaction.setRecipientPhoneNumber(recipientToken.getPhoneNumber());
             transaction.setAmount(amount);
@@ -170,6 +181,7 @@ public class TokenService {
             transaction.setTransactionDate(new Date());
             tokenTransactionRepository.save(transaction);
 
+            // Log activities
             ActivityDis activityDis = new ActivityDis();
             activityDis.setType("TOKEN_SENT");
             activityDis.setDescription("Sent " + amount + " tokens to " + recipient);
@@ -177,26 +189,23 @@ public class TokenService {
             activityDis.setUserEmail(senderToken.getUserEmail());
             activityRepositoryDis.save(activityDis);
 
-            // Log receiving token activity for the recipient
             ActivityDis receiveActivity = new ActivityDis();
             receiveActivity.setType("TOKEN_RECEIPT");
             receiveActivity.setDescription("Received " + amount + " tokens from " + senderIdentifier);
             receiveActivity.setTimestamp(new Date());
             receiveActivity.setUserEmail(recipientToken.getUserEmail());
             activityRepositoryDis.save(receiveActivity);
+
+            // Log transaction details for admin and user
             logActivityAdmin("TOKEN_SENT", "Sent " + amount + " tokens to " + recipient, senderToken.getUserEmail(), transactionId, senderOpeningBalance, senderClosingBalance);
-            // Log activity
-            logActivity(
-                    "TOKEN_RECEIPT",
-                    "Received " + amount + " tokens from " + senderIdentifier,
-                    recipientToken.getUserEmail()
-            );
+            logActivity("TOKEN_RECEIPT", "Received " + amount + " tokens from " + senderIdentifier, recipientToken.getUserEmail());
 
             return transactionId;
         } else {
             throw new RuntimeException("Insufficient tokens or invalid sender.");
         }
-    }public void logActivity(String type, String details, String userEmail) {
+    }
+    public void logActivity(String type, String details, String userEmail) {
         Activity activity = new Activity();
         activity.setType(type);
         activity.setDetails(details);

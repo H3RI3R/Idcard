@@ -145,54 +145,7 @@ public class DistributorController {
     public Iterable<User> listDistributors() {
         return distributorService.listDistributors();
     }
-    @PostMapping("/createTransactionRequest")
-    public ResponseEntity<Map<String, String>> createTransactionRequest(
-            @RequestParam String email,
-            @RequestParam double amount,
-            @RequestParam String transactionId) {
-        try {
-            // Fetch the user's details from the User entity
-            User user = distributorService.getUserByEmail(email);
-            if (user == null) {
-                throw new RuntimeException("User not found");
-            }
-            // Get the creator's email (who will receive the request)
-            String creatorEmail = user.getCreatorEmail();
-            // Create a new transaction request
-            TransactionRequest request = new TransactionRequest();
-            request.setUserEmail(email);
-            request.setAmount(amount);
-            request.setTransactionId(transactionId);
-            request.setStatus("Pending"); // Initial status
-            request.setTimestamp(new Date());
-            request.setCreatorEmail(creatorEmail);
 
-            // Save the transaction request
-            distributorService.saveTransactionRequest(request);
-
-            // Log activity for the distributor
-            String distributorRole = user.getRole();
-            String activityDescription = distributorRole.equalsIgnoreCase("RETAILER") ?
-                    "Retailer requested tokens: " + amount :
-                    "Distributor requested tokens: " + amount;
-
-            // Log activity for the distributor
-            logActivityDis(distributorRole + "_TOKEN_REQUEST", activityDescription, creatorEmail); // For the distributor
-
-            // Log activity for the retailer
-            logActivityRetailer(distributorRole + "_TOKEN_REQUEST", activityDescription, email); // For the retailer
-
-            // Return a successful response
-            Map<String, String> response = new HashMap<>();
-            response.put("message", "Transaction request created successfully");
-            return ResponseEntity.ok(response);
-
-        } catch (RuntimeException e) {
-            Map<String, String> response = new HashMap<>();
-            response.put("error", e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-        }
-    }
 
     public void logActivityDis(String type, String description, String userEmail) {
         ActivityDis activity = new ActivityDis();
