@@ -23,15 +23,47 @@ public class BankService {
     @Autowired
     private ActivityRepositoryDis activityRepositoryDis;
 
-    public void saveBank(String email, String identifier, String name) {
+    public void saveBank(String email,
+                         String accountNumber,
+                         String accountOwnerFullName,
+                         String fathersName,
+                         String mothersName,
+                         String address,
+                         String ifscCode,
+                         String upiId,
+                         String upiName,
+                         String upiFathersName,
+                         String phoneNumber,
+                         String upiProvider,
+                         byte[] qrCodeBytes) {
+
         Bank bank = new Bank();
         bank.setEmail(email);
-        bank.setIdentifier(identifier);
-        bank.setName(name);
+
+        // If saving account details
+        if (accountNumber != null) {
+            bank.setIdentifier(accountNumber);  // Account number is the identifier
+            bank.setName(accountOwnerFullName); // Account owner's name
+            bank.setFathersName(fathersName);
+            bank.setMothersName(mothersName);
+            bank.setAddress(address);
+            bank.setIfscCode(ifscCode);
+        }
+
+        // If saving UPI details
+        if (upiId != null) {
+            bank.setIdentifier(upiId);  // UPI ID is the identifier
+            bank.setName(upiName);      // Account name
+            bank.setFathersName(upiFathersName);
+            bank.setPhoneNumber(phoneNumber);
+            bank.setUpiProvider(upiProvider);
+            bank.setQrCode(qrCodeBytes); // Save the QR Code binary data
+        }
+
         bankRepository.save(bank);
     }
     @Transactional
-    public void modifyBank(String email, String identifier, String changeIdentifier) {
+    public void modifyBank(String email, String identifier, String changeIdentifier, String changeName) {
         // Find the bank by identifier and email
         Bank bank = bankRepository.findByIdentifier(identifier);
 
@@ -39,25 +71,42 @@ public class BankService {
             throw new RuntimeException("Bank not found for email: " + email + " and identifier: " + identifier);
         }
 
-        // Determine the type of changeIdentifier
-        String updateType = "";
-        if (changeIdentifier.contains("@")) {
-            updateType = "UPI ID";
-            bank.setIdentifier(changeIdentifier);
-        } else if (changeIdentifier.matches("\\d+")) {
-            updateType = "Account Number";
-            bank.setIdentifier(changeIdentifier);
-        } else {
-            updateType = "Name";
-            bank.setName(changeIdentifier);
+        // Initialize variables to track what was updated
+        StringBuilder updateDetails = new StringBuilder();
+
+        // If changeIdentifier is provided, update the identifier
+        if (changeIdentifier != null && !changeIdentifier.isEmpty()) {
+            if (changeIdentifier.contains("@")) {
+                bank.setIdentifier(changeIdentifier);  // It's a UPI ID
+                updateDetails.append("UPI ID");
+            } else if (changeIdentifier.matches("\\d+")) {
+                bank.setIdentifier(changeIdentifier);  // It's an Account Number
+                updateDetails.append("Account Number");
+            } else {
+                throw new IllegalArgumentException("Invalid identifier format");
+            }
         }
 
-        // Save the updated bank
+        // If changeName is provided, update the name
+        if (changeName != null && !changeName.isEmpty()) {
+            bank.setName(changeName);
+            if (updateDetails.length() > 0) {
+                updateDetails.append(" and ");  // Append 'and' if both were changed
+            }
+            updateDetails.append("Name");
+        }
+
+        // If nothing was updated, throw an exception
+        if (updateDetails.length() == 0) {
+            throw new RuntimeException("No valid fields to update");
+        }
+
+        // Save the updated bank record
         bankRepository.save(bank);
 
         // Log the activity
-        String activityDescription = "Updated bank for email: " + email + " with new " + updateType + ": " + changeIdentifier;
-        logActivityDis(bank.getEmail(), activityDescription, updateType);
+        String activityDescription = "Updated bank for email: " + email + " with new " + updateDetails;
+        logActivityDis(bank.getEmail(), activityDescription, updateDetails.toString());
     }
 
     @Transactional

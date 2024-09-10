@@ -25,7 +25,8 @@
   <link href="assets/vendor/quill/quill.bubble.css" rel="stylesheet">
   <link href="assets/vendor/remixicon/remixicon.css" rel="stylesheet">
   <link href="assets/vendor/simple-datatables/style.css" rel="stylesheet">
-
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
   <!-- Template Main CSS File -->
   <link href="assets/css/style.css" rel="stylesheet">
 
@@ -143,31 +144,31 @@
 
       </ul>
     <li class="nav-item">
-    <a class="nav-link collapsed" data-bs-target="#report-nav" data-bs-toggle="collapse" href="#">
-      <i class="bi bi-journal-text"></i><span>Manage Report</span><i class="bi bi-chevron-down ms-auto"></i>
-    </a>
-    <ul id="report-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-      <li>
-        <a href="TokenDistribution.html" >
-          <i class="bi bi-circle"></i><span>Token Distribution Report</span>
-        </a>
-      </li>
-      <li>
-        <a href="RetailerPerformanceReport.html" >
-          <i class="bi bi-circle"></i><span>Retailer Performance Report</span>
-        </a>
-      </li>
-      <li>
-        <a href="ActivityLog.html" >
-          <i class="bi bi-circle"></i><span>Activity Timeline</span>
-        </a>
-      </li>
-      <li>
-        <a href="Error.html" >
-          <i class="bi bi-circle"></i><span>Error & Issue Tracking</span>
-        </a>
-      </li>
-    </ul>
+      <a class="nav-link collapsed" data-bs-target="#report-nav" data-bs-toggle="collapse" href="#">
+        <i class="bi bi-journal-text"></i><span>Manage Report</span><i class="bi bi-chevron-down ms-auto"></i>
+      </a>
+      <ul id="report-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+        <li>
+          <a href="TokenDistribution.html" >
+            <i class="bi bi-circle"></i><span>Token Distribution Report</span>
+          </a>
+        </li>
+        <li>
+          <a href="RetailerPerformanceReport.html" >
+            <i class="bi bi-circle"></i><span>Retailer Performance Report</span>
+          </a>
+        </li>
+        <li>
+          <a href="ActivityLog.html" >
+            <i class="bi bi-circle"></i><span>Activity Timeline</span>
+          </a>
+        </li>
+        <li>
+          <a href="Error.html" >
+            <i class="bi bi-circle"></i><span>Error & Issue Tracking</span>
+          </a>
+        </li>
+      </ul>
     </li>
     <li class="nav-item">
       <a class="nav-link collapsed " data-bs-target="#Token-nav" data-bs-toggle="collapse" href="#">
@@ -372,53 +373,27 @@
                   <p class="mb-0 small">Add or Remove Bank Accounts.</p>
                 </div>
                 <div class="card-body">
-                  <form></form>
-
                   <!-- Bank Details Section -->
-                  <div class="mt-4">
-                    <h6 class="text-muted"><i class="bi bi-bank"></i> Bank Details (Active)</h6>
+                  <!-- Bootstrap Alert -->
+                  <div id="alertContainer" class="alert d-none" role="alert"></div>
+                  <div class="container mt-4">
+                    <h6 class="text-muted"><i class="bi bi-bank"></i> Account Details (Active)</h6>
 
-                    <!-- Account Number Section -->
-                    <p class="mb-1">Account Number:
-                      <span class="text-muted" id="bankAccountView">XXXX - XXXX - XXXX - 3241</span>
-                      <input type="text" class="form-control d-none" id="bankAccountEdit" value="2123 - 2342 - 3421 - 3241">
-                    </p>
-
-                    <p class="mb-1"><i class="bi bi-person-fill"></i> Name: RITIK SONI</p>
-
-                    <div class="d-flex justify-content-end mb-3">
-                      <!-- Edit Button -->
-                      <button class="btn btn-sm btn-warning me-2" id="editBankBtn" onclick="editBankAccount()">Edit</button>
-
-                      <!-- Save Button -->
-                      <button class="btn btn-sm btn-success d-none" id="saveBankBtn" onclick="saveBankAccount()">✔</button>
-
-                      <!-- Delete Button -->
-                      <button class="btn btn-sm btn-danger" onclick="confirmDelete('Bank Account')">Delete</button>
-                    </div>
-                  </div>
-
-                  <!-- UPI Accounts Section -->
-                  <div class="mt-4">
-                    <h6 class="text-muted"><i class="bi bi-wallet"></i> UPI Accounts (Active)</h6>
-
-                    <!-- UPI ID Section -->
-                    <p class="mb-1">UPI ID:
-                      <span class="text-muted" id="upiIdView">ritiksoni101@ybl</span>
-                      <input type="text" class="form-control d-none" id="upiIdEdit" value="ritiksoni101@ybl">
-                    </p>
-
-                    <p class="mb-1"><i class="bi bi-person-fill"></i> Name: RITIK SONI</p>
-
-                    <div class="d-flex justify-content-end mb-3">
-                      <!-- Edit Button -->
-                      <button class="btn btn-sm btn-warning me-2" id="editUpiBtn" onclick="editUpiAccount()">Edit</button>
-
-                      <!-- Save Button -->
-                      <button class="btn btn-sm btn-success d-none" id="saveUpiBtn" onclick="saveUpiAccount()">✔</button>
-
-                      <!-- Delete Button -->
-                      <button class="btn btn-sm btn-danger" onclick="confirmDelete('UPI Account')">Delete</button>
+                    <div style="max-height: 300px; overflow-y: auto;"> <!-- Scrollable container -->
+                      <table class="table table-striped">
+                        <thead>
+                        <tr>
+                          <th scope="col">ID</th>
+                          <th scope="col">Account Type</th>
+                          <th scope="col">Identifier</th>
+                          <th scope="col">Name</th>
+                          <th scope="col">Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody id="accountTableBody">
+                        <!-- Table rows will be injected here -->
+                        </tbody>
+                      </table>
                     </div>
                   </div>
 
@@ -432,26 +407,23 @@
                       <span class="fs-5 me-2">✨ Add UPI Account</span>
                       <img src="assets/img/upi.svg" style="height: 20px; width: auto;" alt="Upi">
                     </button>
-                    <button type="button" class="btn btn-warning d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#deleteAccountModal">
-                      <span class="fs-5 me-2">✨ Delete Accounts</span>
-                      <img src="assets/img/upi.svg" style="height: 20px; width: auto;" alt="UPI">
-                      <img src="assets/img/bank.png" style="height: 20px; width: auto;" alt="Bank">
-                    </button>
+                    <!--                    <button type="button" class="btn btn-warning d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#deleteAccountModal">-->
+                    <!--                      <span class="fs-5 me-2">✨ Delete Accounts</span>-->
+                    <!--                      <img src="assets/img/upi.svg" style="height: 20px; width: auto;" alt="UPI">-->
+                    <!--                      <img src="assets/img/bank.png" style="height: 20px; width: auto;" alt="Bank">-->
+                    <!--                    </button>-->
                   </div>
 
+                  <!-- Add Bank Modal -->
                   <!-- Add Bank Modal -->
                   <div class="modal fade" id="addBankModal" tabindex="-1" aria-labelledby="addBankModalLabel" aria-hidden="true">
                     <div class="modal-dialog modal-lg">
                       <div class="modal-content">
-                        <!-- Modal Header -->
                         <div class="modal-header">
                           <h5 class="modal-title" id="addBankModalLabel">Add Bank Account</h5>
                           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
-
-                        <!-- Modal Body -->
                         <div class="modal-body">
-                          <p class="text-muted">Please enter your bank details</p>
                           <form id="addBankForm">
                             <div class="row">
                               <!-- Bank Name -->
@@ -508,21 +480,40 @@
                                 <input type="text" class="form-control" id="ifscCode" required>
                               </div>
                             </div>
-
-                            <!-- Add Account Button -->
-                            <div class="d-grid">
-                              <button type="submit" class="btn btn-dark">Add Account</button>
-                            </div>
+                            <!-- Use type="button" instead of "submit" -->
+                            <button type="button" id="addBankBtn" class="btn btn-dark">Add Account</button>
 
                             <!-- Small Text -->
                             <p class="text-center text-muted small mt-3">We support all payment methods.</p>
+
                           </form>
                         </div>
                       </div>
                     </div>
                   </div>
-
-                  <!-- Modal Body -->
+                  <!-- Success Modal -->
+                  <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                      <div class="modal-content">
+                        <div class="modal-body text-center">
+                          <img src="assets/img/success.png" alt="Success" style="width: 100px; margin-bottom: 20px;">
+                          <h4>Account has been saved successfully!</h4>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Error Modal -->
+                  <div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                      <div class="modal-content">
+                        <div class="modal-body text-center">
+                          <h4 class="text-danger">Error</h4>
+                          <p id="errorModalBody"></p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Add UPI Modal -->
                   <div class="modal fade" id="addUpiModal" tabindex="-1" aria-labelledby="addUpiModalLabel" aria-hidden="true">
                     <div class="modal-dialog modal-lg">
                       <div class="modal-content">
@@ -535,7 +526,7 @@
                         <!-- Modal Body -->
                         <div class="modal-body">
                           <p class="text-muted">Please enter your UPI account details</p>
-                          <form id="addUpiForm">
+                          <form id="addUpiForm" enctype="multipart/form-data">
                             <div class="row">
                               <!-- UPI ID -->
                               <div class="col-md-6 mb-3">
@@ -557,26 +548,21 @@
                                 <input type="text" class="form-control" id="upiFathersName" required>
                               </div>
 
-                              <!-- Phone Number -->
+                              <!-- Mother's Name -->
                               <div class="col-md-6 mb-3">
-                                <label for="upiPhoneNumber" class="form-label">Phone Number</label>
-                                <input type="text" class="form-control" id="upiPhoneNumber" required>
+                                <label for="upiMothersName" class="form-label">Mother's Name</label>
+                                <input type="text" class="form-control" id="upiMothersName" required>
                               </div>
                             </div>
 
                             <div class="row">
-                              <!-- UPI Provider -->
+                              <!-- Address -->
                               <div class="col-md-6 mb-3">
-                                <label for="upiProvider" class="form-label">UPI Provider</label>
-                                <select class="form-select" id="upiProvider" required>
-                                  <option value="">Select Provider</option>
-                                  <option value="Google Pay">Google Pay</option>
-                                  <option value="Paytm">Paytm</option>
-                                  <option value="PhonePe">PhonePe</option>
-                                </select>
+                                <label for="upiAddress" class="form-label">Address</label>
+                                <input type="text" class="form-control" id="upiAddress" required>
                               </div>
 
-                              <!-- Upload QR Code -->
+                              <!-- QR Code Upload -->
                               <div class="col-md-6 mb-3">
                                 <label for="upiQrCode" class="form-label">Upload QR Code</label>
                                 <input type="file" class="form-control" id="upiQrCode" accept="image/*" required>
@@ -585,10 +571,9 @@
 
                             <!-- Add UPI Account Button -->
                             <div class="d-grid">
-                              <button type="submit" class="btn btn-danger">Add UPI Account</button>
+                              <button type="submit" class="btn btn-dark">Add UPI Account</button>
                             </div>
 
-                            <!-- Small Text -->
                             <p class="text-center text-muted small mt-3">We support all payment methods.</p>
                           </form>
                         </div>
@@ -596,87 +581,59 @@
                     </div>
                   </div>
 
+                  <!-- Alerts  Modal -->
+                  <div id="alertPlaceholder"></div>
                   <!-- Delete Account Modal -->
-                  <div class="modal fade" id="deleteAccountModal" tabindex="-1" aria-labelledby="deleteAccountModalLabel" aria-hidden="true">
+                  <!-- Delete Confirmation Modal -->
+                  <div class="modal fade" id="deleteConfirmationModal" tabindex="-1" aria-labelledby="deleteConfirmationLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title" id="deleteConfirmationLabel">Confirm Delete</h5>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                          Are you sure you want to delete <span id="accountToDelete"></span>?
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                          <button type="button" class="btn btn-primary" id="confirmDeleteButton">Delete</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Edit Account Modal -->
+                  <div class="modal fade" id="editAccountModal" tabindex="-1" aria-labelledby="editAccountModalLabel" aria-hidden="true">
                     <div class="modal-dialog modal-lg">
                       <div class="modal-content">
                         <!-- Modal Header -->
                         <div class="modal-header">
-                          <h5 class="modal-title" id="deleteAccountModalLabel">Delete Accounts</h5>
+                          <h5 class="modal-title" id="editAccountModalLabel">Edit Account</h5>
                           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
 
-                        <!-- Modal Body: List of Accounts -->
+                        <!-- Modal Body -->
                         <div class="modal-body">
-                          <p class="text-muted">Select the accounts to delete from the list below:</p>
-
-                          <!-- Account List Section -->
-                          <ul class="list-group">
-                            <!-- Example Bank Account -->
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                              Account: XXXX - XXXX - XXXX - 3241 (RITIK SONI)
-                              <button type="button" class="btn-close" aria-label="Delete" onclick="confirmDelete('Bank Account XXXX - XXXX - XXXX - 3241')"></button>
-                            </li>
-
-                            <!-- Example UPI Account -->
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                              UPI: ritiksoni101@ybl (RITIK SONI)
-                              <button type="button" class="btn-close" aria-label="Delete" onclick="confirmDelete('UPI Account ritiksoni101@ybl')"></button>
-                            </li>
-
-                            <!-- Add more accounts dynamically as needed -->
-                          </ul>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- Delete Confirmation Modal -->
-                  <div class="modal fade" id="deleteConfirmationModal" tabindex="-1" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
-                    <div class="modal-dialog">
-                      <div class="modal-content">
-                        <!-- Modal Header -->
-                        <div class="modal-header">
-                          <h5 class="modal-title" id="deleteConfirmationModalLabel">Confirm Deletion</h5>
-                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                          <form id="editAccountForm">
+                            <div class="mb-3">
+                              <label for="editIdentifier" class="form-label">Identifier</label>
+                              <input type="text" class="form-control" id="editIdentifier" required>
+                            </div>
+                            <div class="mb-3">
+                              <label for="editName" class="form-label">Name</label>
+                              <input type="text" class="form-control" id="editName" required>
+                            </div>
+                          </form>
                         </div>
 
-                        <!-- Modal Body: Confirmation Text -->
-                        <div class="modal-body">
-                          Are you sure you want to delete <strong id="accountToDelete"></strong>?
-                        </div>
-
-                        <!-- Modal Footer: Confirm or Cancel Buttons -->
+                        <!-- Modal Footer -->
                         <div class="modal-footer">
-                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                          <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                          <button type="button" class="btn btn-primary" onclick="saveChanges()">Save changes</button>
                         </div>
                       </div>
                     </div>
                   </div>
-
-<!--                  <div class="modal fade" id="deleteConfirmationModal2" tabindex="-1" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">-->
-<!--                    <div class="modal-dialog">-->
-<!--                      <div class="modal-content">-->
-<!--                        &lt;!&ndash; Modal Header &ndash;&gt;-->
-<!--                        <div class="modal-header">-->
-<!--                          <h5 class="modal-title" id="deleteConfirmationModalLabel">Confirm Deletion</h5>-->
-<!--                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>-->
-<!--                        </div>-->
-
-<!--                        &lt;!&ndash; Modal Body &ndash;&gt;-->
-<!--                        <div class="modal-body">-->
-<!--                          Are you sure you want to delete <strong id="accountToDelete"></strong>?-->
-<!--                        </div>-->
-
-<!--                        &lt;!&ndash; Modal Footer &ndash;&gt;-->
-<!--                        <div class="modal-footer">-->
-<!--                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>-->
-<!--                          <button type="button" class="btn btn-danger" onclick="performDelete()">Delete</button>-->
-<!--                        </div>-->
-<!--                      </div>-->
-<!--                    </div>-->
-<!--                  </div>-->
 
                 </div>
               </div>
@@ -699,7 +656,6 @@
                       <label class="form-label" for="giftcard">Gift Card Number</label>
                       <input placeholder="Gift Card Number" name="giftcard" required="" type="text" id="giftcard" class="form-control">
                       <div class="invalid-feedback">
-
                       </div>
                     </div>
                   </div>
@@ -794,10 +750,11 @@
 <script src="assets/vendor/simple-datatables/simple-datatables.js"></script>
 <script src="assets/vendor/tinymce/tinymce.min.js"></script>
 <script src="assets/vendor/php-email-form/validate.js"></script>
+<!--<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>-->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <!-- SweetAlert2 CDN -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<!-- Template Main JS File -->
+<!-- Bootstrap JS -->
 <!--  <script src="assets/js/main.js"></script>-->
 <!--<script src = "rIndex.js"></script>-->
 <script>
@@ -1097,80 +1054,369 @@
   });
 
 
-//  ---------------------------Delete X sign ---------------------
-  function confirmDelete(account) {
+
+  // ------------------------------------------ Account API ----------------------------------------------------------
+  const userEmail = sessionStorage.getItem('userEmail');
+  let selectedAccountId = null; // Variable to hold the currently selected account ID
+  let currentIdentifier = ''; // To store the current identifier
+  let currentName = ''; // To store the current name
+
+  // Function to fetch API data and populate the table
+  function fetchAndDisplayAccounts() {
+  fetch(`http://localhost:8080/api/admin/bank/view?email=${userEmail}`)
+    .then(response => response.json())
+    .then(data => {
+  const tableBody = document.getElementById('accountTableBody');
+  tableBody.innerHTML = ''; // Clear existing rows
+
+  data.forEach(account => {
+  const row = document.createElement('tr');
+
+  // Determine account type (Bank or UPI) and handle null or empty identifiers
+  let accountType = account.identifier
+  ? account.identifier.includes('@') ? 'UPI Account' : 'Bank Account'
+  : 'Unknown';
+
+  // Fallbacks for missing data
+  const identifier = account.identifier || 'N/A';
+  const name = account.name || 'N/A';
+
+  row.innerHTML = `
+            <td>${account.id}</td>
+            <td>${accountType}</td>
+            <td>${identifier}</td>
+            <td>${name}</td>
+            <td>
+              <button class="btn btn-warning btn-sm" onclick="openEditModal(${account.id}, '${identifier}', '${name}')">Edit</button>
+              <!-- Delete button for each account row -->
+              <button class="btn btn-danger btn-sm" onclick="deleteAccount('${account.id}', '${account.identifier}')">Delete</button>
+            </td>
+          `;
+
+  tableBody.appendChild(row);
+  });
+  })
+    .catch(error => {
+  console.error('Error fetching accounts:', error);
+  });
+  }
+
+  // Function to open the edit modal and populate fields
+  function openEditModal(id, identifier, name) {
+  selectedAccountId = id; // Store the current account ID for reference
+  currentIdentifier = identifier;
+  currentName = name;
+
+  // Set modal input fields with current values
+  document.getElementById('editIdentifier').value = identifier;
+  document.getElementById('editName').value = name;
+
+  const editModal = new bootstrap.Modal(document.getElementById('editAccountModal'));
+  editModal.show();
+  }
+
+  // Function to save changes and call the API
+  function saveChanges() {
+  const newIdentifier = document.getElementById('editIdentifier').value;
+  const newName = document.getElementById('editName').value;
+
+  let changeIdentifier = '';
+  let changeName = '';
+
+  let isIdentifierChanged = false;
+  let isNameChanged = false;
+
+  // Check if the identifier was changed
+  if (newIdentifier !== currentIdentifier) {
+  changeIdentifier = newIdentifier; // Send new identifier to API
+  isIdentifierChanged = true;
+  }
+
+  // Check if the name was changed
+  if (newName !== currentName) {
+  changeName = newName; // Send new name to API
+  isNameChanged = true;
+  }
+
+  // If neither identifier nor name was changed, exit the function
+  if (!isIdentifierChanged && !isNameChanged) {
+  showAlert('warning', 'No changes were made.');
+  return;
+  }
+
+  // Prepare the API URL with the parameters for both changes
+  let apiUrl = `http://localhost:8080/api/admin/bank/modify?email=${userEmail}&identifier=${currentIdentifier}`;
+
+  // Append parameters conditionally based on what was changed
+  if (isIdentifierChanged) {
+  apiUrl += `&changeIdentifier=${encodeURIComponent(changeIdentifier)}`;
+  }
+  if (isNameChanged) {
+  apiUrl += `&changeName=${encodeURIComponent(changeName)}`;
+  }
+
+  fetch(apiUrl, {
+  method: 'PUT',
+  headers: {
+  'Content-Type': 'application/json'
+  }
+  })
+    .then(response => response.json())
+    .then(data => {
+  if (data.status === 'success') {
+  // Show success message based on what was changed
+  let successMessage = '';
+  if (isIdentifierChanged && isNameChanged) {
+  successMessage = 'Identifier and Name have been successfully changed.';
+  } else if (isIdentifierChanged) {
+  successMessage = 'Identifier has been successfully changed.';
+  } else if (isNameChanged) {
+  successMessage = 'Name has been successfully changed.';
+  }
+
+  showAlert('success', successMessage);
+  fetchAndDisplayAccounts(); // Refresh the account table
+
+  const editModal = bootstrap.Modal.getInstance(document.getElementById('editAccountModal'));
+  editModal.hide(); // Close the modal
+  } else {
+  showAlert('danger', 'Failed to modify the account.');
+  }
+  })
+    .catch(error => {
+  console.error('Error modifying account:', error);
+  showAlert('danger', 'An error occurred while modifying the account.');
+  });
+  }
+
+  // ---------------------------- Delete API -------------------------------
+  // Variable to hold the account details for deletion
+  let currentDeleteAccountIdentifier = null;
+
+  // Function to trigger the delete confirmation modal
+  function deleteAccount(id, identifier) {
+    currentDeleteAccountIdentifier = identifier;
+
     // Set the account to delete in the confirmation modal
-    document.getElementById('accountToDelete').innerText = account;
+    document.getElementById('accountToDelete').innerText = identifier;
 
-    // Show the confirmation modal
-    var deleteModal = new bootstrap.Modal(document.getElementById('deleteConfirmationModal'));
+    // Show the delete confirmation modal
+    const deleteModal = new bootstrap.Modal(document.getElementById('deleteConfirmationModal'));
     deleteModal.show();
+  }
 
-    // Set the delete action
-    document.getElementById('confirmDeleteBtn').onclick = function() {
-      // Implement the delete logic here (API call or form submission)
-      alert(account + ' has been deleted.');
+  // Function to handle the actual deletion
+  function handleDelete() {
+    const userEmail = sessionStorage.getItem('userEmail');
+    const apiUrl = `http://localhost:8080/api/admin/bank/delete?email=${userEmail}&identifier=${currentDeleteAccountIdentifier}`;
+
+    fetch(apiUrl, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+      .then(response => response.text())
+      .then(data => {
+      if (data.includes('Bank deleted successfully')) {
+        // Show success alert
+        showAlert('success', 'Bank deleted successfully');
+        fetchAndDisplayAccounts(); // Refresh the account table
+      } else {
+        // Show error alert
+        showAlert('danger', 'Failed to delete the account');
+      }
+
+      // Hide the delete confirmation modal
+      const deleteModal = bootstrap.Modal.getInstance(document.getElementById('deleteConfirmationModal'));
       deleteModal.hide();
-    };
+    })
+      .catch(error => {
+      console.error('Error deleting account:', error);
+      showAlert('danger', 'An error occurred while deleting the account');
+    });
   }
 
-//  --------------------Delete Edit save button -----------------
-  function editBankAccount() {
-    document.getElementById('bankAccountView').classList.add('d-none');
-    document.getElementById('bankAccountEdit').classList.remove('d-none');
-    document.getElementById('editBankBtn').classList.add('d-none');
-    document.getElementById('saveBankBtn').classList.remove('d-none');
+  // Function to setup the delete button listener
+  function setupDeleteButtonListener() {
+    const confirmDeleteButton = document.getElementById('confirmDeleteButton');
+    if (confirmDeleteButton) {
+      confirmDeleteButton.addEventListener('click', handleDelete);
+      console.log('Delete button listener set up successfully.');
+    } else {
+      console.error('Confirm Delete Button not found.');
+    }
   }
 
-  // Function to save the bank account changes
-  function saveBankAccount() {
-    let accountNumber = document.getElementById('bankAccountEdit').value;
+  // Ensure event listeners are added once the DOM is fully loaded
+  document.addEventListener('DOMContentLoaded', () => {
+    setupDeleteButtonListener();
+    fetchAndDisplayAccounts(); // Load the table when the page loads
+  });
 
-    // Format account number to hide the first 12 digits
-    let hiddenAccountNumber = accountNumber.replace(/\d(?=\d{4})/g, "X");
+  // Function to display Bootstrap alerts
+  function showAlert(type, message) {
+    const alertContainer = document.getElementById('alertContainer');
+    alertContainer.className = `alert alert-${type}`;
+    alertContainer.textContent = message;
+    alertContainer.classList.remove('d-none'); // Show the alert
 
-    // Display the hidden version in the view mode
-    document.getElementById('bankAccountView').textContent = hiddenAccountNumber;
-    document.getElementById('bankAccountView').classList.remove('d-none');
-    document.getElementById('bankAccountEdit').classList.add('d-none');
-    document.getElementById('editBankBtn').classList.remove('d-none');
-    document.getElementById('saveBankBtn').classList.add('d-none');
+    // Automatically hide the alert after 5 seconds
+    setTimeout(() => {
+      alertContainer.classList.add('d-none');
+    }, 5000);
   }
+  //---------------------------------------------Add Bank Account ---------------------------
+  document.addEventListener('DOMContentLoaded', function () {
+    const addBankForm = document.getElementById('addBankForm');
+    const addBankBtn = document.getElementById('addBankBtn');
 
-  // Function to toggle between view mode and edit mode for UPI ID
-  function editUpiAccount() {
-    document.getElementById('upiIdView').classList.add('d-none');
-    document.getElementById('upiIdEdit').classList.remove('d-none');
-    document.getElementById('editUpiBtn').classList.add('d-none');
-    document.getElementById('saveUpiBtn').classList.remove('d-none');
+    if (addBankForm && addBankBtn) {
+      // Listen for the button click
+      addBankBtn.addEventListener('click', function () {
+        console.log('Button clicked!'); // Check if the button click is registered
+
+        // Retrieve email from session storage
+        const email = sessionStorage.getItem('userEmail');
+        if (!email) {
+          console.error('Email not found in session storage.');
+          showErrorModal("User email not found.");
+          return;
+        }
+
+        // Gather form data
+        const accountNumber = document.getElementById('accountNumber').value.trim();
+        const reAccountNumber = document.getElementById('reAccountNumber').value.trim();
+        const accountOwnerFullName = document.getElementById('accountOwner').value.trim();
+        const fathersName = document.getElementById('fathersName').value.trim();
+        const mothersName = document.getElementById('mothersName').value.trim();
+        const address = document.getElementById('address').value.trim();
+        const ifscCode = document.getElementById('ifscCode').value.trim();
+
+        // Validate account number match
+        if (accountNumber !== reAccountNumber) {
+          console.error('Account numbers do not match.');
+          showErrorModal("Account numbers do not match.");
+          return;
+        }
+
+        // Validate required fields
+        if (!accountNumber || !accountOwnerFullName || !fathersName || !mothersName || !address || !ifscCode) {
+          console.error('All fields are required.');
+          showErrorModal("All fields are required.");
+          return;
+        }
+
+        // Create the request body
+        const requestBody = new URLSearchParams({
+          email: email,
+          accountNumber: accountNumber,
+          reEnterAccountNumber: reAccountNumber,
+          accountOwnerFullName: accountOwnerFullName,
+          fathersName: fathersName,
+          mothersName: mothersName,
+          address: address,
+          ifscCode: ifscCode
+        });
+
+        console.log('Request body:', requestBody.toString()); // Debugging log
+
+        // Send the POST request to the API
+        fetch('http://localhost:8080/api/admin/bank/save', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          },
+          body: requestBody
+        })
+          .then(response => response.text()) // Convert to text to match the response format
+          .then(data => {
+          console.log('Response data:', data); // Debugging log
+          if (data === "Bank saved successfully") {
+            showSuccessModal();
+            addBankForm.reset(); // Optionally reset the form after successful submission
+          } else {
+            showErrorModal("Error: " + data);
+          }
+        })
+          .catch(error => {
+          console.error('Error:', error); // Debugging log
+          showErrorModal("An error occurred while saving the bank.");
+        });
+      });
+    } else {
+      console.error('addBankForm or addBankBtn element not found.');
+    }
+
+    // Show success modal
+    function showSuccessModal() {
+      const successModal = new bootstrap.Modal(document.getElementById('successModal'));
+      successModal.show();
+
+      // Optionally, refresh the page or reload the table after closing the modal
+      successModal._element.addEventListener('hidden.bs.modal', function () {
+        location.reload(); // Refresh the page after closing
+      });
+    }
+
+    // Show error modal
+    function showErrorModal(errorMessage) {
+      const errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
+      document.getElementById('errorModalBody').innerText = errorMessage;
+      errorModal.show();
+    }
+  });
+  //---------------------------------Add Upi account apis--------------------------------------
+  document.getElementById('addUpiForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    const formData = new FormData();
+    const email = sessionStorage.getItem('userEmail');
+    formData.append('email', email);
+    formData.append('upiId', document.getElementById('upiId').value);
+    formData.append('upiName', document.getElementById('upiAccountName').value);
+    formData.append('upiFathersName', document.getElementById('upiFathersName').value);
+    formData.append('upiMothersName', document.getElementById('upiMothersName').value);
+    formData.append('upiProvider', 'Some UPI Provider'); // Example provider
+    formData.append('address', document.getElementById('upiAddress').value);
+
+    // Append the QR Code file
+    const qrCodeFile = document.getElementById('upiQrCode').files[0];
+    if (qrCodeFile) {
+      formData.append('qrCodeFile', qrCodeFile);
+    }
+
+    fetch('http://localhost:8080/api/admin/bank/save', {
+      method: 'POST',
+      body: formData
+    })
+    .then(response => response.text())
+    .then(data => {
+      if (data.includes('Bank saved successfully')) {
+        // Show success alert and close modal
+        showAlert('success', 'Bank saved successfully');
+        const addUpiModal = bootstrap.Modal.getInstance(document.getElementById('addUpiModal'));
+        addUpiModal.hide();
+        fetchAndDisplayAccounts(); // Refresh the table
+      } else {
+        showAlert('danger', 'Failed to save bank details');
+      }
+    })
+    .catch(error => {
+      console.error('Error saving bank details:', error);
+      showAlert('danger', 'An error occurred while saving bank details');
+    });
+  });
+
+  function showAlert(type, message) {
+    const alertContainer = document.getElementById('alertContainer');
+    alertContainer.className = `alert alert-${type}`;
+    alertContainer.textContent = message;
+    alertContainer.classList.remove('d-none');
+    setTimeout(() => {
+      alertContainer.classList.add('d-none');
+    }, 5000);
   }
-
-  // Function to save the UPI ID changes
-  function saveUpiAccount() {
-    let upiId = document.getElementById('upiIdEdit').value;
-    document.getElementById('upiIdView').textContent = upiId;
-    document.getElementById('upiIdView').classList.remove('d-none');
-    document.getElementById('upiIdEdit').classList.add('d-none');
-    document.getElementById('editUpiBtn').classList.remove('d-none');
-    document.getElementById('saveUpiBtn').classList.add('d-none');
-  }
-
-  // Function to show delete confirmation modal
-  function confirmDelete(accountType) {
-    document.getElementById('accountToDelete').innerText = accountType;
-    var deleteModal = new bootstrap.Modal(document.getElementById('deleteConfirmationModal'));
-    deleteModal.show();
-  }
-
-  // Function to perform the actual delete action
-  function performDelete() {
-    alert('Account deleted successfully!');
-    var deleteModal = bootstrap.Modal.getInstance(document.getElementById('deleteConfirmationModal2'));
-    deleteModal.hide();
-  }
-
-
-
 </script>
 
 </body>

@@ -5,8 +5,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 
 @Data
 @Entity
@@ -14,11 +12,20 @@ public class Bank {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     private String email;
-    private String identifier; // accountNumber or UPI ID
-    private String name;        // Bank name or UPI holder name
+    private String identifier;  // Could be account number or UPI ID
+    private String name;         // Could be account owner or UPI account name
+    private String fathersName;
+    private String mothersName;
+    private String address;
+    private String ifscCode;
 
+    // UPI-specific fields
+    private String phoneNumber;
+    private String upiProvider;
 
+    // Storing the QR code as a string representing the image data or path (depending on your approach)
+    private byte[] qrCode;  // Use byte[] if you're storing the actual image data as BLOB in the database
 }

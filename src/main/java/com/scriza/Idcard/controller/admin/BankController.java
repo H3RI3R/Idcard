@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Collections;
 import java.util.Date;
@@ -28,15 +29,37 @@ public class BankController {
     @PostMapping("/save")
     public ResponseEntity<String> saveBank(
             @RequestParam String email,
-            @RequestParam String identifier,
-            @RequestParam String name) {
+            @RequestParam(required = false) String accountNumber,
+            @RequestParam(required = false) String reEnterAccountNumber,
+            @RequestParam(required = false) String accountOwnerFullName,
+            @RequestParam(required = false) String fathersName,
+            @RequestParam(required = false) String mothersName,
+            @RequestParam(required = false) String address,
+            @RequestParam(required = false) String ifscCode,
+            @RequestParam(required = false) String upiId,
+            @RequestParam(required = false) String upiName,
+            @RequestParam(required = false) String upiFathersName,
+            @RequestParam(required = false) String phoneNumber,
+            @RequestParam(required = false) String upiProvider,
+            @RequestParam(required = false) MultipartFile qrCodeFile) {
         try {
-            bankService.saveBank(email, identifier, name);
+            // Validate Account Number
+            if (accountNumber != null && !accountNumber.equals(reEnterAccountNumber)) {
+                return ResponseEntity.badRequest().body("Account numbers do not match.");
+            }
+
+            // Save the QR Code as binary data
+            byte[] qrCodeBytes = null;
+            if (qrCodeFile != null && !qrCodeFile.isEmpty()) {
+                qrCodeBytes = qrCodeFile.getBytes();
+            }
+
+            // Call service to save bank/UPI details
+            bankService.saveBank(email, accountNumber, accountOwnerFullName, fathersName, mothersName, address, ifscCode, upiId, upiName, upiFathersName, phoneNumber, upiProvider, qrCodeBytes);
 
             // Log the activity for saving a bank
-            logActivityDis(identifier.contains("@") ? "UPI_ID" : "ACCOUNT_NUMBER",
-                    "Saved " + (identifier.contains("@") ? "UPI ID" : "Account Number"),
-                    email);
+            String type = upiId != null ? "UPI_ID" : "ACCOUNT_NUMBER";
+            logActivityDis(type, "Saved " + (upiId != null ? "UPI ID" : "Account Number"), email);
 
             return ResponseEntity.ok("Bank saved successfully");
         } catch (Exception e) {
@@ -47,9 +70,10 @@ public class BankController {
     public ResponseEntity<?> modifyBank(
             @RequestParam String email,
             @RequestParam String identifier,
-            @RequestParam String changeIdentifier) {
+            @RequestParam(required = false) String changeIdentifier, // Now optional
+            @RequestParam(required = false) String changeName) {      // New parameter for name
         try {
-            bankService.modifyBank(email, identifier, changeIdentifier);
+            bankService.modifyBank(email, identifier, changeIdentifier, changeName);
             return Response.responseSuccess("Bank Modified Successfully");
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error: " + e.getMessage());

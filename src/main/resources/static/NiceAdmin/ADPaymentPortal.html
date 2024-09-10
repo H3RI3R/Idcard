@@ -305,7 +305,7 @@
           </li>
           <li class="nav-item">
             <a class="nav-link" data-bs-toggle="tab" href="#tab-qr-payment">
-              QR UPI
+              Banks
             </a>
           </li>
           <li class="nav-item">
@@ -336,14 +336,14 @@
                       <div class="mb-3">
                         <label class="form-label">Select Plan <span class="text-danger">*</span></label>
                         <select aria-label="Default select example" name="amount" id="selectPlan" required class="form-select">
-                          <option value="1" class="hidden_feature" style="display: none;">₹ 1 Plan - 0 Cards</option>
-                          <option value="22" selected>₹ 22 Plan - 10 Cards</option>
-                          <option value="55">₹ 55 Plan - 25 Cards</option>
-                          <option value="110">₹ 110 Plan - 50 Cards</option>
-                          <option value="220">₹ 220 Plan - 100 Cards</option>
-                          <option value="385">₹ 385 Plan - 175 Cards</option>
-                          <option value="550">₹ 550 Plan - 250 Cards</option>
-                          <option value="1100">₹ 1100 Plan - 500 Cards</option>
+                          <option value="1" class="hidden_feature" style="display: none;">₹ 1 Plan - 0 Token</option>
+                          <option value="22" selected>₹ 22 Plan - 10 Tokens</option>
+                          <option value="55">₹ 55 Plan - 25 Tokens</option>
+                          <option value="110">₹ 110 Plan - 50 Tokens</option>
+                          <option value="220">₹ 220 Plan - 100 Tokens</option>
+                          <option value="385">₹ 385 Plan - 175 Tokens</option>
+                          <option value="550">₹ 550 Plan - 250 Tokens</option>
+                          <option value="1100">₹ 1100 Plan - 500 Tokens</option>
                         </select>
                       </div>
                       <div class="d-grid mt-4">
@@ -396,9 +396,278 @@
           </div>
           <div class="tab-pane" id="tab-qr-payment">
             <div class="row g-4">
-              <h3 class="text-center">
-                This feature is disabled in for now
-              </h3>
+              <div class="col-md-8 mx-auto">
+                <div class="card">
+                  <div class="border-bottom card-header">
+                    <div class="mb-0 card-title h5">Modify Accounts</div>
+                    <p class="mb-0 small">Add or Remove Bank Accounts.</p>
+                  </div>
+                  <div class="card-body">
+                    <!-- Bank Details Section -->
+                    <!-- Bootstrap Alert -->
+                    <div id="alertContainer" class="alert d-none" role="alert"></div>
+                    <div class="container mt-4">
+                      <h6 class="text-muted"><i class="bi bi-bank"></i> Account Details (Active)</h6>
+
+                      <div style="max-height: 300px; overflow-y: auto;"> <!-- Scrollable container -->
+                        <table class="table table-striped">
+                          <thead>
+                          <tr>
+                            <th scope="col">ID</th>
+                            <th scope="col">Account Type</th>
+                            <th scope="col">Identifier</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Actions</th>
+                          </tr>
+                          </thead>
+                          <tbody id="accountTableBody">
+                          <!-- Table rows will be injected here -->
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="d-grid mt-4">
+                      <button type="button" class="btn btn-dark d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#addBankModal">
+                        <span class="fs-5 me-2">✨ Add Bank</span>
+                        <img src="assets/img/bank.png" style="height: 20px; width: auto;" alt="Bank">
+                      </button>
+                      <button type="button" class="btn btn-danger d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#addUpiModal">
+                        <span class="fs-5 me-2">✨ Add UPI Account</span>
+                        <img src="assets/img/upi.svg" style="height: 20px; width: auto;" alt="Upi">
+                      </button>
+                      <!--                    <button type="button" class="btn btn-warning d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#deleteAccountModal">-->
+                      <!--                      <span class="fs-5 me-2">✨ Delete Accounts</span>-->
+                      <!--                      <img src="assets/img/upi.svg" style="height: 20px; width: auto;" alt="UPI">-->
+                      <!--                      <img src="assets/img/bank.png" style="height: 20px; width: auto;" alt="Bank">-->
+                      <!--                    </button>-->
+                    </div>
+
+                    <!-- Add Bank Modal -->
+                    <!-- Add Bank Modal -->
+                    <div class="modal fade" id="addBankModal" tabindex="-1" aria-labelledby="addBankModalLabel" aria-hidden="true">
+                      <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title" id="addBankModalLabel">Add Bank Account</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                          </div>
+                          <div class="modal-body">
+                            <form id="addBankForm">
+                              <div class="row">
+                                <!-- Bank Name -->
+                                <div class="col-md-6 mb-3">
+                                  <label for="bankName" class="form-label">Bank Name</label>
+                                  <input type="text" class="form-control" id="bankName" required>
+                                </div>
+
+                                <!-- Account Number -->
+                                <div class="col-md-6 mb-3">
+                                  <label for="accountNumber" class="form-label">Account Number</label>
+                                  <input type="text" class="form-control" id="accountNumber" required>
+                                </div>
+                              </div>
+
+                              <div class="row">
+                                <!-- Re-enter Account Number -->
+                                <div class="col-md-6 mb-3">
+                                  <label for="reAccountNumber" class="form-label">Re-enter Account Number</label>
+                                  <input type="text" class="form-control" id="reAccountNumber" required>
+                                </div>
+
+                                <!-- Account Owner Full Name -->
+                                <div class="col-md-6 mb-3">
+                                  <label for="accountOwner" class="form-label">Account Owner Full Name</label>
+                                  <input type="text" class="form-control" id="accountOwner" required>
+                                </div>
+                              </div>
+
+                              <div class="row">
+                                <!-- Father's Name -->
+                                <div class="col-md-6 mb-3">
+                                  <label for="fathersName" class="form-label">Father's Name</label>
+                                  <input type="text" class="form-control" id="fathersName" required>
+                                </div>
+
+                                <!-- Mother's Name -->
+                                <div class="col-md-6 mb-3">
+                                  <label for="mothersName" class="form-label">Mother's Name</label>
+                                  <input type="text" class="form-control" id="mothersName" required>
+                                </div>
+                              </div>
+
+                              <div class="row">
+                                <!-- Address -->
+                                <div class="col-md-6 mb-3">
+                                  <label for="address" class="form-label">Address</label>
+                                  <input type="text" class="form-control" id="address" required>
+                                </div>
+
+                                <!-- IFSC Code -->
+                                <div class="col-md-6 mb-3">
+                                  <label for="ifscCode" class="form-label">IFSC Code</label>
+                                  <input type="text" class="form-control" id="ifscCode" required>
+                                </div>
+                              </div>
+                              <!-- Use type="button" instead of "submit" -->
+                              <button type="button" id="addBankBtn" class="btn btn-dark">Add Account</button>
+
+                              <!-- Small Text -->
+                              <p class="text-center text-muted small mt-3">We support all payment methods.</p>
+
+                            </form>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- Success Modal -->
+                    <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+                      <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                          <div class="modal-body text-center">
+                            <img src="assets/img/success.png" alt="Success" style="width: 100px; margin-bottom: 20px;">
+                            <h4>Account has been saved successfully!</h4>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- Error Modal -->
+                    <div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+                      <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                          <div class="modal-body text-center">
+                            <h4 class="text-danger">Error</h4>
+                            <p id="errorModalBody"></p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- Add UPI Modal -->
+                    <div class="modal fade" id="addUpiModal" tabindex="-1" aria-labelledby="addUpiModalLabel" aria-hidden="true">
+                      <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                          <!-- Modal Header -->
+                          <div class="modal-header">
+                            <h5 class="modal-title" id="addUpiModalLabel">Add UPI Account</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                          </div>
+
+                          <!-- Modal Body -->
+                          <div class="modal-body">
+                            <p class="text-muted">Please enter your UPI account details</p>
+                            <form id="addUpiForm" enctype="multipart/form-data">
+                              <div class="row">
+                                <!-- UPI ID -->
+                                <div class="col-md-6 mb-3">
+                                  <label for="upiId" class="form-label">Enter UPI ID</label>
+                                  <input type="text" class="form-control" id="upiId" required>
+                                </div>
+
+                                <!-- Account Name -->
+                                <div class="col-md-6 mb-3">
+                                  <label for="upiAccountName" class="form-label">Account Name</label>
+                                  <input type="text" class="form-control" id="upiAccountName" required>
+                                </div>
+                              </div>
+
+                              <div class="row">
+                                <!-- Father's Name -->
+                                <div class="col-md-6 mb-3">
+                                  <label for="upiFathersName" class="form-label">Father's Name</label>
+                                  <input type="text" class="form-control" id="upiFathersName" required>
+                                </div>
+
+                                <!-- Mother's Name -->
+                                <div class="col-md-6 mb-3">
+                                  <label for="upiMothersName" class="form-label">Mother's Name</label>
+                                  <input type="text" class="form-control" id="upiMothersName" required>
+                                </div>
+                              </div>
+
+                              <div class="row">
+                                <!-- Address -->
+                                <div class="col-md-6 mb-3">
+                                  <label for="upiAddress" class="form-label">Address</label>
+                                  <input type="text" class="form-control" id="upiAddress" required>
+                                </div>
+
+                                <!-- QR Code Upload -->
+                                <div class="col-md-6 mb-3">
+                                  <label for="upiQrCode" class="form-label">Upload QR Code</label>
+                                  <input type="file" class="form-control" id="upiQrCode" accept="image/*" required>
+                                </div>
+                              </div>
+
+                              <!-- Add UPI Account Button -->
+                              <div class="d-grid">
+                                <button type="submit" class="btn btn-dark">Add UPI Account</button>
+                              </div>
+
+                              <p class="text-center text-muted small mt-3">We support all payment methods.</p>
+                            </form>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Alerts  Modal -->
+                    <div id="alertPlaceholder"></div>
+                    <!-- Delete Account Modal -->
+                    <!-- Delete Confirmation Modal -->
+                    <div class="modal fade" id="deleteConfirmationModal" tabindex="-1" aria-labelledby="deleteConfirmationLabel" aria-hidden="true">
+                      <div class="modal-dialog">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title" id="deleteConfirmationLabel">Confirm Delete</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                          </div>
+                          <div class="modal-body">
+                            Are you sure you want to delete <span id="accountToDelete"></span>?
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="button" class="btn btn-primary" id="confirmDeleteButton">Delete</button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- Edit Account Modal -->
+                    <div class="modal fade" id="editAccountModal" tabindex="-1" aria-labelledby="editAccountModalLabel" aria-hidden="true">
+                      <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                          <!-- Modal Header -->
+                          <div class="modal-header">
+                            <h5 class="modal-title" id="editAccountModalLabel">Edit Account</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                          </div>
+
+                          <!-- Modal Body -->
+                          <div class="modal-body">
+                            <form id="editAccountForm">
+                              <div class="mb-3">
+                                <label for="editIdentifier" class="form-label">Identifier</label>
+                                <input type="text" class="form-control" id="editIdentifier" required>
+                              </div>
+                              <div class="mb-3">
+                                <label for="editName" class="form-label">Name</label>
+                                <input type="text" class="form-control" id="editName" required>
+                              </div>
+                            </form>
+                          </div>
+
+                          <!-- Modal Footer -->
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary" onclick="saveChanges()">Save changes</button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
           <div class="tab-pane" id="tab-other">
@@ -409,7 +678,7 @@
                     <h5 class="card-header-title">
                       Add Gift Card
                     </h5>
-                    <p class="mb-0 small">Add gift card to your account</p>
+                    <p class="mb-0 small">Currently this service is not available</p>
                   </div>
                   <form class="needs-validation">
                     <div class="card-body">
@@ -417,7 +686,6 @@
                         <label class="form-label" for="giftcard">Gift Card Number</label>
                         <input placeholder="Gift Card Number" name="giftcard" required="" type="text" id="giftcard" class="form-control">
                         <div class="invalid-feedback">
-
                         </div>
                       </div>
                     </div>
@@ -438,38 +706,40 @@
           </div>
 
 
-<!----------------------------------Status table ------------------------->
+          <!----------------------------------Status table ------------------------->
           <div class="tab-pane" id="tab-Status">
             <div class="row g-4">
-              <div class="col-md-6 mx-auto">
+              <div class="col-md-10 mx-auto">
                 <div class="border shadow card">
                   <div class="border-bottom card-header">
                     <h5 class="card-header-title">
-                      Add Gift Card
+                      Status
                     </h5>
-                    <p class="mb-0 small">Add gift card to your account</p>
+                    <p class="mb-0 small">Status table</p>
                   </div>
-                  <form class="needs-validation">
-                    <div class="card-body">
-                      <div class="mb-3">
-                        <label class="form-label" for="giftcard">Gift Card Number</label>
-                        <input placeholder="Gift Card Number" name="giftcard" required="" type="text" id="Status" class="form-control">
-                        <div class="invalid-feedback">
-
-                        </div>
-                      </div>
+                  <div class="card-body">
+                    <!-- Search and Refresh Controls -->
+                    <div class="d-flex justify-content-between mb-3">
+                      <input type="text" id="searchTransactionId" class="form-control" placeholder="Search by Transaction ID">
+                      <button id="refreshButton" class="btn btn-primary">Refresh</button>
                     </div>
-                    <div class="border-top card-footer">
-                      <div class="text-center">
-                        <button type="submit" class="btn btn-primary fs-5 me-3">
-                        <span class="spinner-border spinner-border-sm me-2" aria-hidden="true" style="display: none;">
-
-                        </span>
-                          <span>Submit</span>
-                        </button>
-                      </div>
-                    </div>
-                  </form>
+                    <!-- Table -->
+                    <table class="table table-sm">
+                      <thead>
+                      <tr>
+                        <th>ID</th>
+                        <th>Date</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th>Transaction ID</th>
+                        <th>Type</th> <!-- New Type Column -->
+                      </tr>
+                      </thead>
+                      <tbody id="transactionTableBody">
+                      <!-- Table rows will be inserted here -->
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </div>
             </div>
@@ -511,9 +781,680 @@
   <script src="assets/vendor/tinymce/tinymce.min.js"></script>
   <script src="assets/vendor/php-email-form/validate.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <!-- Add this in your <head> section or before the closing </body> tag -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <!-- Template Main JS File -->
 <!--  <script src="assets/js/main.js"></script>-->
-<script src = "ADIndex.js"></script>
+  <script>
+//---------------------table apis-----------------------
+    document.addEventListener('DOMContentLoaded', function () {
+  const userEmail = sessionStorage.getItem('userEmail'); // Fetch session storage userEmail
+  const transactionTableBody = document.getElementById('transactionTableBody');
+  const searchInput = document.getElementById('searchTransactionId');
+  const refreshButton = document.getElementById('refreshButton');
+  const tokenPlanMap = {
+    22: 10,
+    55: 25,
+    110: 50,
+    220: 100,
+    385: 175,
+    550: 250,
+    1100: 500
+  };
+
+  // Fetch and display transactions
+  function fetchAndDisplayTransactions() {
+    fetch(`http://localhost:8080/api/admin/distributor/getTransactionRequests?creatorEmail=${userEmail}&userEmail=${userEmail}`)
+      .then(response => response.json())
+      .then(data => {
+        transactionTableBody.innerHTML = ''; // Clear the table body
+
+        // Filter the data based on search input
+        const filteredData = data.filter(transaction =>
+          !searchInput.value || transaction.transactionId.includes(searchInput.value)
+        );
+
+        filteredData.forEach((transaction, index) => {
+          // Determine the request type based on the current user
+          let type = '';
+          if (transaction.userEmail === userEmail) {
+            type = 'Request Sent';
+          } else if (transaction.creatorEmail === userEmail) {
+            type = 'Request Received';
+          }
+
+          // Format the date (remove time)
+          const date = new Date(transaction.timestamp).toLocaleDateString();
+
+          // Determine the status image based on transaction status
+          let statusImage = '';
+          switch (transaction.status) {
+            case 'Pending':
+              statusImage = 'assets/img/pending.png';
+              break;
+            case 'Rejected':
+              statusImage = 'assets/img/rejected.png';
+              break;
+            case 'Accepted':
+              statusImage = 'assets/img/success.png';
+              break;
+            default:
+              statusImage = 'assets/img/default.png'; // Fallback image
+          }
+
+          // Create a table row
+          const row = `
+            <tr>
+              <td>${index + 1}</td>
+              <td>${date}</td>
+              <td>${Math.round(transaction.amount)}</td>
+              <td><img src="${statusImage}" alt="${transaction.status}" style="height: 20px;"></td>
+              <td>${transaction.transactionId}</td>
+              <td>${type}</td>
+              <td>
+                ${transaction.status === 'Pending' && type === 'Request Received' ? `
+                  <button class="btn btn-sm btn-success me-2" onclick="updateStatusAndSendToken('${transaction.transactionId}', 'Accepted', ${transaction.amount}, '${transaction.userEmail}')">Accept</button>
+                  <button class="btn btn-sm btn-danger" onclick="updateStatus('${transaction.transactionId}', 'Rejected')">Reject</button>
+                ` : ''}
+              </td>
+            </tr>
+          `;
+          transactionTableBody.innerHTML += row;
+        });
+      })
+      .catch(error => console.error('Error fetching transaction requests:', error));
+  }
+
+  // Function to update transaction status (only refresh table and show alert)
+window.updateStatus = function (transactionId, status) {
+  fetch(`http://localhost:8080/api/admin/distributor/updateTransactionStatus?transactionId=${transactionId}&status=${status}`, {
+    method: 'POST'
+  })
+    .then(response => response.json())
+    .then(data => {
+      if (data.message) {
+        // Display an alert for successful update (accepted or rejected)
+        Swal.fire({
+          icon: 'success',
+          title: 'Success',
+          text: `Transaction ${status.toLowerCase()} successfully!`,
+          confirmButtonText: 'OK'
+        }).then(() => {
+          // Refresh the table after the status update
+          fetchAndDisplayTransactions();
+        });
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: data.error || 'An error occurred',
+          confirmButtonText: 'OK'
+        });
+      }
+    })
+    .catch(error => {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'An error occurred while updating the status',
+        confirmButtonText: 'OK'
+      });
+      console.error('Error:', error);
+    });
+}
+  // Function to update transaction status and send tokens
+  window.updateStatusAndSendToken = function (transactionId, status, amount, recipientEmail) {
+    // First update the status
+    fetch(`http://localhost:8080/api/admin/distributor/updateTransactionStatus?transactionId=${transactionId}&status=${status}`, {
+      method: 'POST'
+    })
+      .then(response => response.json())
+      .then(data => {
+        if (data.message) {
+          // After status is updated, send the token
+          const tokenAmount = tokenPlanMap[amount];
+          return fetch(`http://localhost:8080/api/admin/token/send?senderIdentifier=${userEmail}&amount=${tokenAmount}&recipient=${recipientEmail}`, {
+            method: 'POST'
+          });
+        } else {
+          throw new Error(data.error || 'An error occurred while updating the status');
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.message) {
+          Swal.fire({
+            icon: 'success',
+            title: 'Success',
+            text: 'Token sent successfully!',
+            confirmButtonText: 'OK'
+          }).then(() => {
+            fetchAndDisplayTransactions(); // Refresh the table after sending tokens
+          });
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: data.error || 'An error occurred while sending the token',
+            confirmButtonText: 'OK'
+          });
+        }
+      })
+      .catch(error => {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: error.message || 'An error occurred',
+          confirmButtonText: 'OK'
+        });
+        console.error('Error:', error);
+      });
+  };
+
+  // Fetch transactions on page load
+  fetchAndDisplayTransactions();
+
+  // Refresh button event listener
+  refreshButton.addEventListener('click', fetchAndDisplayTransactions);
+
+  // Search input event listener
+  searchInput.addEventListener('input', fetchAndDisplayTransactions);
+});
+    //  ------------------------------Create transection request api------------------------------------------
+
+    document.addEventListener("DOMContentLoaded", function() {
+      const doneButton = document.getElementById("doneButton");
+
+      doneButton.addEventListener("click", function() {
+        const transactionID = document.getElementById("transactionID").value;
+        const amount = document.getElementById("selectPlan").value;
+        const email = sessionStorage.getItem('userEmail'); // Replace with the actual session email value
+
+        if (!transactionID) {
+          alert("Please enter the transaction ID.");
+          return;
+        }
+
+        fetch(`http://localhost:8080/api/admin/distributor/createTransactionRequest?email=${email}&amount=${amount}&transactionId=${transactionID}`, {
+          method: 'POST'
+        })
+          .then(response => response.json())
+          .then(data => {
+          if (data.message) {
+            showAlert("Payment request submitted successfully.");
+          } else {
+            showAlert("Error: " + (data.error || "Unknown error"));
+          }
+        })
+          .catch(error => {
+          showAlert("Error: " + error.message);
+        });
+      });
+
+      function showAlert(message) {
+        const alert = document.getElementById("paymentAlert");
+        const alertMessage = document.getElementById("alertMessage");
+        alertMessage.textContent = message;
+        alert.classList.remove("d-none");
+      }
+    });
+    //----------------------------------User name Api -----------------------------------
+
+    document.addEventListener("DOMContentLoaded", function() {
+      // Function to fetch the user's name from the API
+      function fetchUserName() {
+        // Get the email from session data
+        const email = sessionStorage.getItem('userEmail'); // Ensure this is how you fetch email from the session
+
+        if (email) {
+          fetch(`http://localhost:8080/api/admin/distributor/name?email=${encodeURIComponent(email)}`)
+            .then(response => response.json())
+            .then(data => {
+            const userName = data.name || 'Guest'; // Use 'Guest' if no name is found
+            // Update the HTML elements with the fetched name
+            document.querySelector('.nav-profile .dropdown-toggle').textContent = userName;
+            document.querySelector('.dropdown-header h6').textContent = userName;
+          })
+            .catch(error => {
+            console.error('Error fetching name:', error);
+            // Fallback to 'Guest' in case of an error
+            document.querySelector('.nav-profile .dropdown-toggle').textContent = 'Guest';
+            document.querySelector('.dropdown-header h6').textContent = 'Guest';
+          });
+        } else {
+          console.error('No email found in session.');
+          // Fallback to 'Guest' if email is missing
+          document.querySelector('.nav-profile .dropdown-toggle').textContent = 'Guest';
+          document.querySelector('.dropdown-header h6').textContent = 'Guest';
+        }
+      }
+
+      // Call the function on page load
+      fetchUserName();
+    });
+    //--------------------------------Logout api ----------------------
+    document.addEventListener("DOMContentLoaded", function() {
+      // Add event listener to the logout button
+      document.getElementById('logoutBtn').addEventListener('click', function(event) {
+        event.preventDefault(); // Prevent the default link behavior
+        sessionStorage.clear(); // Clear session storage
+        window.location.href = '/login.html'; // Redirect to login page or any other page
+      });
+    });
+
+    //---------------------------------- Alert & gneerate QR code Function  ----------------------------------
+    function generateQRCode() {
+      // Get the selected plan amount
+      var amount = document.getElementById('selectPlan').value;
+
+      // Receiver's UPI ID
+      var upiID = "ritiksoni101@ybl";
+
+      // Construct the UPI Payment URL
+      var upiUrl = `upi://pay?pa=${upiID}&pn=Ritik&am=${amount}&cu=INR`;
+
+      // Clear any previous QR code
+      document.getElementById("qrcode").innerHTML = "";
+
+      // Generate the QR Code
+      var qrcode = new QRCode(document.getElementById("qrcode"), {
+        text: upiUrl,
+        width: 200,  // QR Code width
+        height: 200, // QR Code height
+      });
+    }
+
+    // Event listener for Done button
+    document.getElementById('doneButton').addEventListener('click', function() {
+      // Get the selected plan text
+      var selectedPlan = document.querySelector('select[name="amount"] option:checked').textContent;
+
+      // Get the transaction ID
+      var transactionID = document.getElementById('transactionID').value;
+
+      // Validate transaction ID input
+      if (transactionID === '') {
+        alert('Please enter the transaction ID.');
+        return;
+      }
+
+      // Construct the alert message
+      var alertMessage = `Your request for the <strong>${selectedPlan}</strong> has been sent. Please wait while we process. Or check your status from <a href="ADTokenReport.html" class="alert-link">here</a>.`;
+
+      // Display the alert with the message
+      document.getElementById('alertMessage').innerHTML = alertMessage;
+      document.getElementById('paymentAlert').classList.remove('d-none');
+
+      // Hide the modal
+      var paymentModal = bootstrap.Modal.getInstance(document.getElementById('paymentModal'));
+      paymentModal.hide();
+    });
+
+
+
+    // ------------------------------------------ Account API ----------------------------------------------------------
+    const userEmail = sessionStorage.getItem('userEmail');
+    let selectedAccountId = null; // Variable to hold the currently selected account ID
+    let currentIdentifier = ''; // To store the current identifier
+    let currentName = ''; // To store the current name
+
+    // Function to fetch API data and populate the table
+    function fetchAndDisplayAccounts() {
+    fetch(`http://localhost:8080/api/admin/bank/view?email=${userEmail}`)
+      .then(response => response.json())
+      .then(data => {
+    const tableBody = document.getElementById('accountTableBody');
+    tableBody.innerHTML = ''; // Clear existing rows
+
+    data.forEach(account => {
+    const row = document.createElement('tr');
+
+    // Determine account type (Bank or UPI) and handle null or empty identifiers
+    let accountType = account.identifier
+    ? account.identifier.includes('@') ? 'UPI Account' : 'Bank Account'
+    : 'Unknown';
+
+    // Fallbacks for missing data
+    const identifier = account.identifier || 'N/A';
+    const name = account.name || 'N/A';
+
+    row.innerHTML = `
+              <td>${account.id}</td>
+              <td>${accountType}</td>
+              <td>${identifier}</td>
+              <td>${name}</td>
+              <td>
+                <button class="btn btn-warning btn-sm" onclick="openEditModal(${account.id}, '${identifier}', '${name}')">Edit</button>
+                <!-- Delete button for each account row -->
+                <button class="btn btn-danger btn-sm" onclick="deleteAccount('${account.id}', '${account.identifier}')">Delete</button>
+              </td>
+            `;
+
+    tableBody.appendChild(row);
+    });
+    })
+      .catch(error => {
+    console.error('Error fetching accounts:', error);
+    });
+    }
+
+    // Function to open the edit modal and populate fields
+    function openEditModal(id, identifier, name) {
+    selectedAccountId = id; // Store the current account ID for reference
+    currentIdentifier = identifier;
+    currentName = name;
+
+    // Set modal input fields with current values
+    document.getElementById('editIdentifier').value = identifier;
+    document.getElementById('editName').value = name;
+
+    const editModal = new bootstrap.Modal(document.getElementById('editAccountModal'));
+    editModal.show();
+    }
+
+    // Function to save changes and call the API
+    function saveChanges() {
+    const newIdentifier = document.getElementById('editIdentifier').value;
+    const newName = document.getElementById('editName').value;
+
+    let changeIdentifier = '';
+    let changeName = '';
+
+    let isIdentifierChanged = false;
+    let isNameChanged = false;
+
+    // Check if the identifier was changed
+    if (newIdentifier !== currentIdentifier) {
+    changeIdentifier = newIdentifier; // Send new identifier to API
+    isIdentifierChanged = true;
+    }
+
+    // Check if the name was changed
+    if (newName !== currentName) {
+    changeName = newName; // Send new name to API
+    isNameChanged = true;
+    }
+
+    // If neither identifier nor name was changed, exit the function
+    if (!isIdentifierChanged && !isNameChanged) {
+    showAlert('warning', 'No changes were made.');
+    return;
+    }
+
+    // Prepare the API URL with the parameters for both changes
+    let apiUrl = `http://localhost:8080/api/admin/bank/modify?email=${userEmail}&identifier=${currentIdentifier}`;
+
+    // Append parameters conditionally based on what was changed
+    if (isIdentifierChanged) {
+    apiUrl += `&changeIdentifier=${encodeURIComponent(changeIdentifier)}`;
+    }
+    if (isNameChanged) {
+    apiUrl += `&changeName=${encodeURIComponent(changeName)}`;
+    }
+
+    fetch(apiUrl, {
+    method: 'PUT',
+    headers: {
+    'Content-Type': 'application/json'
+    }
+    })
+      .then(response => response.json())
+      .then(data => {
+    if (data.status === 'success') {
+    // Show success message based on what was changed
+    let successMessage = '';
+    if (isIdentifierChanged && isNameChanged) {
+    successMessage = 'Identifier and Name have been successfully changed.';
+    } else if (isIdentifierChanged) {
+    successMessage = 'Identifier has been successfully changed.';
+    } else if (isNameChanged) {
+    successMessage = 'Name has been successfully changed.';
+    }
+
+    showAlert('success', successMessage);
+    fetchAndDisplayAccounts(); // Refresh the account table
+
+    const editModal = bootstrap.Modal.getInstance(document.getElementById('editAccountModal'));
+    editModal.hide(); // Close the modal
+    } else {
+    showAlert('danger', 'Failed to modify the account.');
+    }
+    })
+      .catch(error => {
+    console.error('Error modifying account:', error);
+    showAlert('danger', 'An error occurred while modifying the account.');
+    });
+    }
+
+    // ---------------------------- Delete API -------------------------------
+    // Variable to hold the account details for deletion
+    let currentDeleteAccountIdentifier = null;
+
+    // Function to trigger the delete confirmation modal
+    function deleteAccount(id, identifier) {
+      currentDeleteAccountIdentifier = identifier;
+
+      // Set the account to delete in the confirmation modal
+      document.getElementById('accountToDelete').innerText = identifier;
+
+      // Show the delete confirmation modal
+      const deleteModal = new bootstrap.Modal(document.getElementById('deleteConfirmationModal'));
+      deleteModal.show();
+    }
+
+    // Function to handle the actual deletion
+    function handleDelete() {
+      const userEmail = sessionStorage.getItem('userEmail');
+      const apiUrl = `http://localhost:8080/api/admin/bank/delete?email=${userEmail}&identifier=${currentDeleteAccountIdentifier}`;
+
+      fetch(apiUrl, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+        .then(response => response.text())
+        .then(data => {
+        if (data.includes('Bank deleted successfully')) {
+          // Show success alert
+          showAlert('success', 'Bank deleted successfully');
+          fetchAndDisplayAccounts(); // Refresh the account table
+        } else {
+          // Show error alert
+          showAlert('danger', 'Failed to delete the account');
+        }
+
+        // Hide the delete confirmation modal
+        const deleteModal = bootstrap.Modal.getInstance(document.getElementById('deleteConfirmationModal'));
+        deleteModal.hide();
+      })
+        .catch(error => {
+        console.error('Error deleting account:', error);
+        showAlert('danger', 'An error occurred while deleting the account');
+      });
+    }
+
+    // Function to setup the delete button listener
+    function setupDeleteButtonListener() {
+      const confirmDeleteButton = document.getElementById('confirmDeleteButton');
+      if (confirmDeleteButton) {
+        confirmDeleteButton.addEventListener('click', handleDelete);
+        console.log('Delete button listener set up successfully.');
+      } else {
+        console.error('Confirm Delete Button not found.');
+      }
+    }
+
+    // Ensure event listeners are added once the DOM is fully loaded
+    document.addEventListener('DOMContentLoaded', () => {
+      setupDeleteButtonListener();
+      fetchAndDisplayAccounts(); // Load the table when the page loads
+    });
+
+    // Function to display Bootstrap alerts
+    function showAlert(type, message) {
+      const alertContainer = document.getElementById('alertContainer');
+      alertContainer.className = `alert alert-${type}`;
+      alertContainer.textContent = message;
+      alertContainer.classList.remove('d-none'); // Show the alert
+
+      // Automatically hide the alert after 5 seconds
+      setTimeout(() => {
+        alertContainer.classList.add('d-none');
+      }, 5000);
+    }
+    //---------------------------------------------Add Bank Account ---------------------------
+    document.addEventListener('DOMContentLoaded', function () {
+      const addBankForm = document.getElementById('addBankForm');
+      const addBankBtn = document.getElementById('addBankBtn');
+
+      if (addBankForm && addBankBtn) {
+        // Listen for the button click
+        addBankBtn.addEventListener('click', function () {
+          console.log('Button clicked!'); // Check if the button click is registered
+
+          // Retrieve email from session storage
+          const email = sessionStorage.getItem('userEmail');
+          if (!email) {
+            console.error('Email not found in session storage.');
+            showErrorModal("User email not found.");
+            return;
+          }
+
+          // Gather form data
+          const accountNumber = document.getElementById('accountNumber').value.trim();
+          const reAccountNumber = document.getElementById('reAccountNumber').value.trim();
+          const accountOwnerFullName = document.getElementById('accountOwner').value.trim();
+          const fathersName = document.getElementById('fathersName').value.trim();
+          const mothersName = document.getElementById('mothersName').value.trim();
+          const address = document.getElementById('address').value.trim();
+          const ifscCode = document.getElementById('ifscCode').value.trim();
+
+          // Validate account number match
+          if (accountNumber !== reAccountNumber) {
+            console.error('Account numbers do not match.');
+            showErrorModal("Account numbers do not match.");
+            return;
+          }
+
+          // Validate required fields
+          if (!accountNumber || !accountOwnerFullName || !fathersName || !mothersName || !address || !ifscCode) {
+            console.error('All fields are required.');
+            showErrorModal("All fields are required.");
+            return;
+          }
+
+          // Create the request body
+          const requestBody = new URLSearchParams({
+            email: email,
+            accountNumber: accountNumber,
+            reEnterAccountNumber: reAccountNumber,
+            accountOwnerFullName: accountOwnerFullName,
+            fathersName: fathersName,
+            mothersName: mothersName,
+            address: address,
+            ifscCode: ifscCode
+          });
+
+          console.log('Request body:', requestBody.toString()); // Debugging log
+
+          // Send the POST request to the API
+          fetch('http://localhost:8080/api/admin/bank/save', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: requestBody
+          })
+            .then(response => response.text()) // Convert to text to match the response format
+            .then(data => {
+            console.log('Response data:', data); // Debugging log
+            if (data === "Bank saved successfully") {
+              showSuccessModal();
+              addBankForm.reset(); // Optionally reset the form after successful submission
+            } else {
+              showErrorModal("Error: " + data);
+            }
+          })
+            .catch(error => {
+            console.error('Error:', error); // Debugging log
+            showErrorModal("An error occurred while saving the bank.");
+          });
+        });
+      } else {
+        console.error('addBankForm or addBankBtn element not found.');
+      }
+
+      // Show success modal
+      function showSuccessModal() {
+        const successModal = new bootstrap.Modal(document.getElementById('successModal'));
+        successModal.show();
+
+        // Optionally, refresh the page or reload the table after closing the modal
+        successModal._element.addEventListener('hidden.bs.modal', function () {
+          location.reload(); // Refresh the page after closing
+        });
+      }
+
+      // Show error modal
+      function showErrorModal(errorMessage) {
+        const errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
+        document.getElementById('errorModalBody').innerText = errorMessage;
+        errorModal.show();
+      }
+    });
+    //---------------------------------Add Upi account apis--------------------------------------
+    document.getElementById('addUpiForm').addEventListener('submit', function(event) {
+      event.preventDefault();
+
+      const formData = new FormData();
+      const email = sessionStorage.getItem('userEmail');
+      formData.append('email', email);
+      formData.append('upiId', document.getElementById('upiId').value);
+      formData.append('upiName', document.getElementById('upiAccountName').value);
+      formData.append('upiFathersName', document.getElementById('upiFathersName').value);
+      formData.append('upiMothersName', document.getElementById('upiMothersName').value);
+      formData.append('upiProvider', 'Some UPI Provider'); // Example provider
+      formData.append('address', document.getElementById('upiAddress').value);
+
+      // Append the QR Code file
+      const qrCodeFile = document.getElementById('upiQrCode').files[0];
+      if (qrCodeFile) {
+        formData.append('qrCodeFile', qrCodeFile);
+      }
+
+      fetch('http://localhost:8080/api/admin/bank/save', {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => response.text())
+      .then(data => {
+        if (data.includes('Bank saved successfully')) {
+          // Show success alert and close modal
+          showAlert('success', 'Bank saved successfully');
+          const addUpiModal = bootstrap.Modal.getInstance(document.getElementById('addUpiModal'));
+          addUpiModal.hide();
+          fetchAndDisplayAccounts(); // Refresh the table
+        } else {
+          showAlert('danger', 'Failed to save bank details');
+        }
+      })
+      .catch(error => {
+        console.error('Error saving bank details:', error);
+        showAlert('danger', 'An error occurred while saving bank details');
+      });
+    });
+
+    function showAlert(type, message) {
+      const alertContainer = document.getElementById('alertContainer');
+      alertContainer.className = `alert alert-${type}`;
+      alertContainer.textContent = message;
+      alertContainer.classList.remove('d-none');
+      setTimeout(() => {
+        alertContainer.classList.add('d-none');
+      }, 5000);
+    }
+  </script>
 
 
 </body>
