@@ -90,11 +90,14 @@ public class BankService {
 
     @Transactional
     public void modifyBank(String email, String identifier, String changeIdentifier, String changeName) {
-        Bank bank = bankRepository.findByIdentifier(identifier);
+        // Fetch the bank using both email and identifier
+        Optional<Bank> optionalBank = bankRepository.findByEmailAndIdentifier(email, identifier);
 
-        if (bank == null || !bank.getEmail().equalsIgnoreCase(email)) {
+        if (!optionalBank.isPresent()) {
             throw new RuntimeException("Bank not found for email: " + email + " and identifier: " + identifier);
         }
+
+        Bank bank = optionalBank.get();
 
         // Initialize variables to track what was updated
         StringBuilder updateDetails = new StringBuilder();
@@ -123,8 +126,10 @@ public class BankService {
             throw new RuntimeException("No valid fields to update");
         }
 
+        // Save the updated bank entity
         bankRepository.save(bank);
 
+        // Log the activity
         String activityDescription = "Updated bank for email: " + email + " with new " + updateDetails;
         logActivityDis(bank.getEmail(), activityDescription, updateDetails.toString());
     }

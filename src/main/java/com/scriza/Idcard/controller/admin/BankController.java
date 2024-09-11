@@ -72,9 +72,10 @@ public class BankController {
     public ResponseEntity<?> modifyBank(
             @RequestParam String email,
             @RequestParam String identifier,
-            @RequestParam(required = false) String changeIdentifier, // Now optional
-            @RequestParam(required = false) String changeName) {      // New parameter for name
+            @RequestParam(required = false) String changeIdentifier, // Optional parameter
+            @RequestParam(required = false) String changeName) {      // Optional parameter
         try {
+            // Call the service method with the provided parameters
             bankService.modifyBank(email, identifier, changeIdentifier, changeName);
             return Response.responseSuccess("Bank Modified Successfully");
         } catch (RuntimeException e) {

@@ -398,11 +398,13 @@ function closeModal(modalId) {
   modal.style.display = "none";
   document.body.style.overflow = ""; // Re-enable scroll when modal is closed
 }
-  // ------------------------------------------ Account API ----------------------------------------------------------
+
+//--------------------------------------Account APi -0-------------------------------------------
  const userEmail = sessionStorage.getItem('userEmail');
  let selectedAccountId = null; // Variable to hold the currently selected account ID
  let currentIdentifier = ''; // To store the current identifier
  let currentName = ''; // To store the current name
+ let selectedIdentifier = ''; // To store the identifier for activation/deactivation
 
  // Function to fetch API data and populate the table
  function fetchAndDisplayAccounts() {
@@ -423,9 +425,11 @@ function closeModal(modalId) {
                  const identifier = account.identifier || 'N/A';
                  const name = account.name || 'N/A';
                  const status = account.status || 'N/A';
+
+                 // Determine status button based on the account status
                  const statusButton = status === 'ACTIVE'
-                     ? `<button class="btn btn-success btn-sm" disabled>Active</button>`
-                     : `<button class="btn btn-dark btn-sm" onclick="openDeactivateModal('${identifier}')">Deactivate</button>`;
+                     ? `<button class="btn btn-success btn-sm" onclick="openDeactivateModal('${identifier}')">Active</button>`
+                     : `<button class="btn btn-dark btn-sm" onclick="openActivateModal('${identifier}')">Deactivate</button>`;
 
                  row.innerHTML = `
                      <td>${account.id}</td>
@@ -536,30 +540,61 @@ function closeModal(modalId) {
  }
 
  // Function to open the deactivate confirmation modal
-function openDeactivateModal(identifier) {
-    console.log('Opening deactivate modal with identifier:', identifier); // Debugging
-    selectedAccountId = identifier;
-    const deactivateModal = new bootstrap.Modal(document.getElementById('deactivateModal'));
-    deactivateModal.show();
-}
+ function openDeactivateModal(identifier) {
+     selectedIdentifier = identifier; // Store the identifier of the account
+     const deactivateModal = new bootstrap.Modal(document.getElementById('deactivateModal'));
+     deactivateModal.show();
+ }
 
- // Function to activate the account after confirmation
- function activateAccount() {
-     fetch(`http://localhost:8080/api/admin/bank/updateStatus?email=${userEmail}&identifier=${selectedAccountId}&status=ACTIVE`, {
+ // Function to deactivate the account after confirmation
+ function deactivateAccount() {
+     fetch(`http://localhost:8080/api/admin/bank/updateStatus?email=${userEmail}&identifier=${selectedIdentifier}&status=DEACTIVE`, {
          method: 'POST',
          headers: {
              'Content-Type': 'application/json'
          }
      })
-     .then(response => response.text()) // Change to .text() to handle plain text response
+     .then(response => response.text()) // Handle plain text response
+     .then(text => {
+         if (text === 'Bank status updated successfully') {
+             showAlert('success', 'Account has been deactivated.');
+             fetchAndDisplayAccounts(); // Refresh the account table
+
+             const deactivateModal = bootstrap.Modal.getInstance(document.getElementById('deactivateModal'));
+             deactivateModal.hide(); // Close the modal
+         } else {
+             showAlert('danger', 'Failed to deactivate the account.');
+         }
+     })
+     .catch(error => {
+         console.error('Error deactivating account:', error);
+         showAlert('danger', 'An error occurred while deactivating the account.');
+     });
+ }
+
+ // Function to open the activate confirmation modal
+ function openActivateModal(identifier) {
+     selectedIdentifier = identifier; // Store the identifier of the account
+     const activateModal = new bootstrap.Modal(document.getElementById('activateAccountModal'));
+     activateModal.show();
+ }
+
+ // Function to activate the account after confirmation
+ function activateAccount() {
+     fetch(`http://localhost:8080/api/admin/bank/updateStatus?email=${userEmail}&identifier=${selectedIdentifier}&status=ACTIVE`, {
+         method: 'POST',
+         headers: {
+             'Content-Type': 'application/json'
+         }
+     })
+     .then(response => response.text()) // Handle plain text response
      .then(text => {
          if (text === 'Bank status updated successfully') {
              showAlert('success', 'Account has been activated.');
              fetchAndDisplayAccounts(); // Refresh the account table
 
-             // Hide the confirmation modal
-             const deactivateModal = bootstrap.Modal.getInstance(document.getElementById('deactivateModal'));
-             deactivateModal.hide();
+             const activateModal = bootstrap.Modal.getInstance(document.getElementById('activateAccountModal'));
+             activateModal.hide(); // Close the modal
          } else {
              showAlert('danger', 'Failed to activate the account.');
          }
@@ -569,7 +604,6 @@ function openDeactivateModal(identifier) {
          showAlert('danger', 'An error occurred while activating the account.');
      });
  }
-
 
  // Function to show alerts using SweetAlert
  function showAlert(type, message) {
@@ -698,6 +732,7 @@ function filterActiveAccounts() {
         '<span class="fs-6 me-2" id="buttonText">Show All <i class="bi bi-arrow-up"></i></span>' :
         '<span class="fs-6 me-2" id="buttonText">Show Active <i class="bi bi-arrow-down"></i></span>';
 }
+
   //---------------------------------------------Add Bank Account ---------------------------
   document.addEventListener('DOMContentLoaded', function () {
     const addBankForm = document.getElementById('addBankForm');
