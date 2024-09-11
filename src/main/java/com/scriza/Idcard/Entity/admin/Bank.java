@@ -21,6 +21,8 @@ public class Bank {
     private String mothersName;
     private String address;
     private String ifscCode;
+    private String status;
+    private String type; // New field to indicate account type
 
     // UPI-specific fields
     private String phoneNumber;

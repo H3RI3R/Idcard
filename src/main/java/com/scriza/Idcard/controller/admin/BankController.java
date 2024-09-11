@@ -16,6 +16,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+
 @RestController
 @RequestMapping("/api/admin/bank")
 public class BankController {
@@ -25,7 +26,6 @@ public class BankController {
 
     @Autowired
     private ActivityRepositoryDis activityRepositoryDis;
-
     @PostMapping("/save")
     public ResponseEntity<String> saveBank(
             @RequestParam String email,
@@ -58,14 +58,16 @@ public class BankController {
             bankService.saveBank(email, accountNumber, accountOwnerFullName, fathersName, mothersName, address, ifscCode, upiId, upiName, upiFathersName, phoneNumber, upiProvider, qrCodeBytes);
 
             // Log the activity for saving a bank
-            String type = upiId != null ? "UPI_ID" : "ACCOUNT_NUMBER";
-            logActivityDis(type, "Saved " + (upiId != null ? "UPI ID" : "Account Number"), email);
+            String type = (accountNumber != null) ? "Bank Account" : "UPI Account";
+            logActivityDis(type.equals("UPI_ACCOUNT") ? "UPI_ID" : "ACCOUNT_NUMBER", "Saved " + (type.equals("UPI_ACCOUNT") ? "UPI ID" : "Account Number"), email);
 
             return ResponseEntity.ok("Bank saved successfully");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
         }
     }
+
+
     @PutMapping("/modify")
     public ResponseEntity<?> modifyBank(
             @RequestParam String email,
@@ -82,6 +84,16 @@ public class BankController {
         }
     }
 
+    @PostMapping("/updateStatus")
+    public ResponseEntity<String> updateStatus(
+            @RequestParam String email,
+            @RequestParam String identifier,
+            @RequestParam String status) {
+
+        // Call service to update the status
+        return bankService.updateStatus(email, identifier, status);
+    }
+
     @DeleteMapping("/delete")
     public ResponseEntity<String> deleteBank(
             @RequestParam String email,
@@ -90,9 +102,7 @@ public class BankController {
             bankService.deleteBank(email, identifier);
 
             // Log the activity for deleting a bank
-            logActivityDis(identifier.contains("@") ? "UPI_ID" : "ACCOUNT_NUMBER",
-                    "Deleted " + (identifier.contains("@") ? "UPI ID" : "Account Number"),
-                    email);
+            logActivityDis(identifier.contains("@") ? "UPI_ID" : "ACCOUNT_NUMBER", "Deleted " + (identifier.contains("@") ? "UPI ID" : "Account Number"), email);
 
             return ResponseEntity.ok("Bank deleted successfully");
         } catch (Exception e) {
