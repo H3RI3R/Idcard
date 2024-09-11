@@ -62,15 +62,21 @@ async function fetchAdminActivities() {
             identifier = adminEmail;
             userInfoUrl = `http://localhost:8080/api/admin/distributor/userInfo?email=${encodeURIComponent(identifier)}`;
         } else if (type === 'TOKEN_SENT') {
-            const phoneNumber = description.match(/\d{10}$/)[0];
-            identifier = phoneNumber;
-            userInfoUrl = `http://localhost:8080/api/admin/distributor/userInfo?email=${encodeURIComponent(identifier)}`;
+            // Ensure description is not null and has at least 10 digits
+            if (description && /\d{10}$/.test(description)) {
+                const phoneNumber = description.match(/\d{10}$/)[0];
+                identifier = phoneNumber;
+                userInfoUrl = `http://localhost:8080/api/admin/distributor/userInfo?email=${encodeURIComponent(identifier)}`;
+            } else {
+                console.error('Description is not valid for TOKEN_SENT type.');
+                return null;
+            }
         }
 
         const userInfoResponse = await fetch(userInfoUrl);
         const userInfo = await userInfoResponse.json();
 
-        const amountMatch = description.match(/\d+/);
+        const amountMatch = description ? description.match(/\d+/) : null;
         const amount = amountMatch ? parseInt(amountMatch[0], 10) : null;
 
         const dateObj = new Date(timestamp);

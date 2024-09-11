@@ -300,7 +300,7 @@
         <ul class="nav nav-tabs nav-bottom-line mb-3 d-flex justify-content-center">
           <li class="nav-item">
             <a class="nav-link active" data-bs-toggle="tab" href="#tab-payment-gateway">
-              Payment Gateway
+              Create token
             </a>
           </li>
           <li class="nav-item">
@@ -322,37 +322,51 @@
         <div class="tab-content mt-3" style="height: auto !important;">
           <div class="tab-pane show active" id="tab-payment-gateway" style="height: auto !important;">
             <div class="row g-4">
-              <div class="col-md-6 col-sm-6 col-lg-6 mx-auto">
-                <div class="card">
+              <!-- Left Column: Token Card -->
+              <div class="col-md-4 col-sm-6 col-lg-4 float-start">
+                <div class="card info-card revenue-card">
+                  <div class="card-body">
+                    <h5 class="card-title">Token</h5>
+                    <div class="d-flex align-items-center">
+                      <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                        <i class="bi bi-currency-dollar"></i>
+                      </div>
+                      <div class="ps-3">
+                        <h6 id="tokenCount">0</h6>
+                      </div>
+                    </div>
+                  </div>
+                </div><!-- End Token Card -->
+              </div>
+
+
+
+              <div class="col-md-6 col-sm-12 col-lg-6 mx-auto">
+              <div class="card">
                   <div class="border-bottom card-header">
                     <div class="mb-0 card-title h5">
-                      Plans</div>
+                      Create</div>
                     <p class="mb-0 small">
-                      Purchase a plan to get started
+                      Create tokens from here
                     </p>
                   </div>
                   <div class="card-body">
                     <form>
                       <div class="mb-3">
-                        <label class="form-label">Select Plan <span class="text-danger">*</span></label>
-                        <select aria-label="Default select example" name="amount" id="selectPlan" required class="form-select">
-                          <option value="1" class="hidden_feature" style="display: none;">₹ 1 Plan - 0 Token</option>
-                          <option value="22" selected>₹ 22 Plan - 10 Tokens</option>
-                          <option value="55">₹ 55 Plan - 25 Tokens</option>
-                          <option value="110">₹ 110 Plan - 50 Tokens</option>
-                          <option value="220">₹ 220 Plan - 100 Tokens</option>
-                          <option value="385">₹ 385 Plan - 175 Tokens</option>
-                          <option value="550">₹ 550 Plan - 250 Tokens</option>
-                          <option value="1100">₹ 1100 Plan - 500 Tokens</option>
-                        </select>
+                        <label for="inputAmount" class="col-sm-2 col-form-label">Amount</label>
+                        <div class="col-sm-10">
+                          <input type="number" class="form-control" id="inputAmount" placeholder="Enter Token Amount" required>
+                        </div>
                       </div>
                       <div class="d-grid mt-4">
-                        <!-- Button Triggering the Modal -->
-                        <button type="button" class="btn btn-dark d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#paymentModal" onclick="generateQRCode()">
-                          <span class="fs-5 me-2">✨ Pay with</span>
-                          <img src="assets/img/upi.svg" style="height: 20px; width: auto;" alt="Upi">
+                        <!-- Button Triggering Token Creation -->
+                        <button type="button" class="btn btn-dark d-flex justify-content-center align-items-center" id="createTokenButton">
+                          <span class="fs-5 me-2">✨ Create Tokens</span>
                         </button>
                       </div>
+
+                      <!-- Alert Message (Optional for displaying raw message) -->
+                      <div id="tokenCreationMessage" class="mt-3"></div>
                     </form>
 
                     <!-- Payment Modal -->
@@ -594,8 +608,8 @@
 
                                 <!-- QR Code Upload -->
                                 <div class="col-md-6 mb-3">
-                                  <label for="upiQrCode" class="form-label">Upload QR Code</label>
-                                  <input type="file" class="form-control" id="upiQrCode" accept="image/*" required>
+                                  <label for="upiQrCode" class="form-label">Upload QR Code(Optional)</label>
+                                  <input type="file" class="form-control" id="upiQrCode" accept="image/*">
                                 </div>
                               </div>
 
@@ -1454,6 +1468,170 @@ window.updateStatus = function (transactionId, status) {
         alertContainer.classList.add('d-none');
       }, 5000);
     }
+ //   -------------------------------------Token count --------------------------------
+    document.addEventListener('DOMContentLoaded', function() {
+    // Fetch the user email from session storage
+    const userEmail = sessionStorage.getItem('userEmail');
+
+    if (userEmail) {
+        // Define the API endpoint to get wallet address and phone number
+        const getWalletAddressUrl = `http://localhost:8080/api/admin/token/getWalletAddress?email=${encodeURIComponent(userEmail)}`;
+
+        // Fetch wallet address and phone number
+        fetch(getWalletAddressUrl)
+            .then(response => response.json())
+            .then(data => {
+            if (data.error) {
+                console.error('Error fetching wallet address and phone number:', data.error);
+            } else {
+                // Extract phone number and wallet address directly from the JSON response
+                const phoneNumber = data.phoneNumber;
+                const walletAddress = data.walletAddress;
+
+                if (phoneNumber && walletAddress) {
+                    // Fetch token count using the phone number
+                    const getTokenCountUrl = `http://localhost:8080/api/admin/token/count?identifier=${encodeURIComponent(phoneNumber)}`;
+
+                    return fetch(getTokenCountUrl);
+                } else {
+                    console.error('Phone number or wallet address not found in the response.');
+                    throw new Error('Phone number or wallet address not found');
+                }
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+            if (data.tokenCount !== undefined) {
+                // Update the token amount in the HTML
+                document.getElementById("tokenCount").textContent = data.tokenCount;
+            } else {
+                console.error('Error fetching token count:', data.error);
+            }
+        })
+            .catch(error => console.error('Error:', error));
+    } else {
+        console.error('User email is not found in session storage.');
+    }
+});
+ //   -----------------------__Create Token Apis---------------------_______
+document.addEventListener('DOMContentLoaded', function() {
+    // Function to fetch and update the token count
+    function fetchTokenCount() {
+        const userEmail = sessionStorage.getItem('userEmail');
+
+        if (userEmail) {
+            const getWalletAddressUrl = `http://localhost:8080/api/admin/token/getWalletAddress?email=${encodeURIComponent(userEmail)}`;
+
+            fetch(getWalletAddressUrl)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        console.error('Error fetching wallet address:', data.error);
+                    } else {
+                        const phoneNumber = data.phoneNumber;
+                        const walletAddress = data.walletAddress;
+
+                        if (phoneNumber && walletAddress) {
+                            const getTokenCountUrl = `http://localhost:8080/api/admin/token/count?identifier=${encodeURIComponent(phoneNumber)}`;
+
+                            return fetch(getTokenCountUrl);
+                        } else {
+                            console.error('Phone number or wallet address not found in the response.');
+                            throw new Error('Phone number or wallet address not found');
+                        }
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.tokenCount !== undefined) {
+                        document.getElementById("tokenCount").textContent = data.tokenCount;
+                    } else {
+                        console.error('Error fetching token count:', data.error);
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        } else {
+            console.error('User email is not found in session storage.');
+        }
+    }
+
+    // Handle the Create Tokens button click
+    const createTokenButton = document.getElementById('createTokenButton');
+    const inputAmount = document.getElementById('inputAmount');
+
+    createTokenButton.addEventListener('click', function() {
+        const amount = inputAmount.value;
+        const userEmail = sessionStorage.getItem('userEmail');
+
+        if (!userEmail) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'User email is not set in session storage.',
+                confirmButtonText: 'OK'
+            });
+            return;
+        }
+
+        const walletAddressUrl = `http://localhost:8080/api/admin/token/getWalletAddress?email=${encodeURIComponent(userEmail)}`;
+
+        fetch(walletAddressUrl)
+            .then(response => response.json())
+            .then(data => {
+                const walletAddress = data.walletAddress;
+
+                const apiUrl = 'http://localhost:8080/api/admin/token/create';
+                const params = new URLSearchParams();
+                params.append('walletAddress', walletAddress);
+                params.append('email', userEmail);
+                params.append('amount', amount);
+
+                return fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: params.toString()
+                });
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: data.error,
+                        confirmButtonText: 'OK'
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: data.message,
+                        confirmButtonText: 'OK'
+                    }).then(() => {
+                        // Refresh the token count
+                        fetchTokenCount();
+
+                        // Reset the input field
+                        inputAmount.value = '';
+                    });
+                }
+            })
+            .catch(error => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'An error occurred while creating tokens.',
+                    confirmButtonText: 'OK'
+                });
+                console.error('Error:', error);
+            });
+    });
+
+    // Initial call to fetch token count on page load
+    fetchTokenCount();
+});
   </script>
 
 
