@@ -1036,13 +1036,28 @@ function handlePayment() {
     return;
   }
 
-  // First, fetch the distributor user information to get the creator's email
+  // Define the number of tokens for each plan
+  const planTokens = {
+    "1": 0,
+    "22": 10,
+    "55": 25,
+    "110": 50,
+    "220": 100,
+    "385": 175,
+    "550": 250,
+    "1100": 500
+  };
+
+  // Get the number of tokens for the selected plan
+  const tokens = planTokens[selectedPlan] || 0;
+
+  // Fetch the distributor user information to get the creator's email
   fetch(`http://localhost:8080/api/admin/distributor/userInfo?email=${userEmail}`)
     .then(response => response.json())
     .then(userInfo => {
       const creatorEmail = userInfo.creatorEmail;
 
-      // Now fetch the bank/UPI accounts using the creator's email
+      // Fetch the bank/UPI accounts using the creator's email
       fetch(`http://localhost:8080/api/admin/bank/view?email=${creatorEmail}`)
         .then(response => response.json())
         .then(data => {
@@ -1082,13 +1097,20 @@ function handlePayment() {
             if (upiAccounts.length > 0) {
               // Display all UPI accounts
               upiAccounts.forEach(account => {
+                const { identifier } = account;
+
+                // Generate UPI payment link
+                const upiLink = `upi://pay?pa=${encodeURIComponent(identifier)}&am=${selectedPlan}&cu=INR`;
+
+                // Create QR Code
+                const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(upiLink)}&size=150x150`;
                 const accountHtml = `
                   <div class="account-details mb-4">
+                    <p class="fw-bold">Please Pay ₹${selectedPlan} for ${tokens} Tokens Request on this Account</p>
                     <p class="fw-bold">Name: ${account.name}</p>
-                    <p class="fw-bold">UPI ID: ${account.identifier}</p>
-                    <div id="upiQRCode1" class="d-flex justify-content-center">
-                      <!-- Here you can generate and display a QR code using any QR code library -->
-                      <p>QR Code for ${account.identifier}</p>
+                    <p class="fw-bold">UPI ID: ${identifier}</p>
+                    <div class="d-flex justify-content-center mb-4">
+                      <img src="${qrCodeUrl}" alt="QR Code for ${identifier}">
                     </div>
                   </div>
                 `;
