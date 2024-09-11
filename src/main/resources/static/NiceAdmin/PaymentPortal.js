@@ -658,6 +658,46 @@ function openDeactivateModal(identifier) {
       alertContainer.classList.add('d-none');
     }, 5000);
   }
+let isFilterActive = false;
+
+function filterActiveAccounts() {
+    // Get all table rows
+    const rows = document.querySelectorAll('#accountTableBody tr');
+    const button = document.getElementById('toggleActiveFilter');
+
+    rows.forEach(row => {
+        // Check if the Actions column contains an "Active" button
+        const actionsCell = row.querySelector('td:last-child');
+        if (actionsCell) {
+            const buttons = actionsCell.querySelectorAll('button');
+            let showRow = false;
+
+            // Check if there is an "Active" button
+            buttons.forEach(button => {
+                if (button.textContent.trim() === 'Active') {
+                    showRow = true;
+                }
+            });
+
+            // Show or hide the row based on the presence of the "Active" button
+            if (isFilterActive) {
+                row.style.display = ''; // Show the row
+            } else {
+                if (showRow) {
+                    row.style.display = ''; // Show the row
+                } else {
+                    row.style.display = 'none'; // Hide the row
+                }
+            }
+        }
+    });
+
+    // Toggle filter state and update button text
+    isFilterActive = !isFilterActive;
+    button.innerHTML = isFilterActive ?
+        '<span class="fs-6 me-2" id="buttonText">Show All <i class="bi bi-arrow-up"></i></span>' :
+        '<span class="fs-6 me-2" id="buttonText">Show Active <i class="bi bi-arrow-down"></i></span>';
+}
   //---------------------------------------------Add Bank Account ---------------------------
   document.addEventListener('DOMContentLoaded', function () {
     const addBankForm = document.getElementById('addBankForm');

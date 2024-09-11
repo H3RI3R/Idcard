@@ -30,6 +30,13 @@
   <!-- Template Main CSS File -->
   <!-- Bootstrap CSS -->
   <link href="assets/css/style.css" rel="stylesheet">
+  <style>
+    #toggleActiveFilter {
+    width: 150px; /* Adjust the width as needed */
+    padding: 0.25rem 0.5rem; /* Adjust padding for smaller button */
+    font-size: 0.875rem; /* Smaller font size */
+    text-align: center; /* Center the text */
+}</style>
 
   <!-- =======================================================
   * Template Name: NiceAdmin
@@ -399,6 +406,12 @@
                   <!-- Bank Details Section -->
                   <!-- Bootstrap Alert -->
                   <div id="alertContainer" class="alert d-none" role="alert"></div>
+                  <!-- Show Active Button -->
+                  <div class="d-grid mt-2">
+                    <button type="button" id="toggleActiveFilter" class="btn btn-dark btn-sm" onclick="filterActiveAccounts()">
+                      <span class="fs-6 me-2" id="buttonText">Show Active <i class="bi bi-arrow-down"></i></span>
+                    </button>
+                  </div>
                   <div class="container mt-4">
                     <h6 class="text-muted"><i class="bi bi-bank"></i> Account Details (Active)</h6>
 
