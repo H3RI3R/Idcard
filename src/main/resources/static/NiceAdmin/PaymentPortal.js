@@ -310,15 +310,18 @@ function handlePayment() {
       fetch(`http://localhost:8080/api/admin/bank/view?email=${creatorEmail}`)
         .then(response => response.json())
         .then(data => {
+          // Filter accounts based on selected payment method and active status
+          const activeAccounts = data.filter(account => account.status.toUpperCase() === 'ACTIVE');
+
           if (paymentMethod === 'BankTransfer') {
-            // Filter for bank accounts
-            const bankAccounts = data.filter(account => /^[0-9]+$/.test(account.identifier));
+            // Filter for active bank accounts
+            const bankAccounts = activeAccounts.filter(account => /^[0-9]+$/.test(account.identifier) && account.type === 'Bank Account');
 
             // Clear previous content
             document.getElementById("bankAccountsContainer").innerHTML = "";
 
             if (bankAccounts.length > 0) {
-              // Display all bank accounts
+              // Display all active bank accounts
               bankAccounts.forEach(account => {
                 const accountHtml = `
                   <div class="account-details mb-4">
@@ -332,19 +335,19 @@ function handlePayment() {
               // Show Bank Transfer Modal
               openModal('bankTransferModal1');
             } else {
-              // Show message when no bank accounts are available
-              document.getElementById("bankAccountsContainer").innerHTML = "<p>No Account Available. Please Select Another Option.</p>";
+              // Show message when no active bank accounts are available
+              document.getElementById("bankAccountsContainer").innerHTML = "<p>No Active Bank Account Available. Please Select Another Option.</p>";
               openModal('bankTransferModal1');
             }
           } else if (paymentMethod === 'UPI') {
-            // Filter for UPI accounts
-            const upiAccounts = data.filter(account => account.identifier.includes('@'));
+            // Filter for active UPI accounts
+            const upiAccounts = activeAccounts.filter(account => account.identifier.includes('@') && account.type === 'UPI Account');
 
             // Clear previous content
             document.getElementById("upiAccountsContainer").innerHTML = "";
 
             if (upiAccounts.length > 0) {
-              // Display all UPI accounts
+              // Display all active UPI accounts
               upiAccounts.forEach(account => {
                 const { identifier } = account;
 
@@ -368,8 +371,8 @@ function handlePayment() {
               // Show UPI Modal
               openModal('upiModal1');
             } else {
-              // Show message when no UPI accounts are available
-              document.getElementById("upiAccountsContainer").innerHTML = "<p>No Account Available. Please Select Another Option.</p>";
+              // Show message when no active UPI accounts are available
+              document.getElementById("upiAccountsContainer").innerHTML = "<p>No Active UPI Account Available. Please Select Another Option.</p>";
               openModal('upiModal1');
             }
           }
@@ -398,7 +401,6 @@ function closeModal(modalId) {
   modal.style.display = "none";
   document.body.style.overflow = ""; // Re-enable scroll when modal is closed
 }
-
 //--------------------------------------Account APi -0-------------------------------------------
  const userEmail = sessionStorage.getItem('userEmail');
  let selectedAccountId = null; // Variable to hold the currently selected account ID
