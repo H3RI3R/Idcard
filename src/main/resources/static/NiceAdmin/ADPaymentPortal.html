@@ -316,8 +316,8 @@
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" data-bs-toggle="tab" href="#tab-other">
-              Other
+            <a class="nav-link" data-bs-toggle="tab" href="#tab-tokenRate">
+              Token Rate
             </a>
           </li>
           <li class="nav-item">
@@ -733,36 +733,35 @@
               </div>
             </div>
           </div>
-          <div class="tab-pane" id="tab-other">
+
+
+<!--        //  &#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;Rate Table &#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;-->
+
+          <div class="tab-pane" id="tab-tokenRate">
             <div class="row g-4">
-              <div class="col-md-6 mx-auto">
+              <div class="col-md-10 mx-auto">
                 <div class="border shadow card">
                   <div class="border-bottom card-header">
-                    <h5 class="card-header-title">
-                      Add Gift Card
-                    </h5>
-                    <p class="mb-0 small">Currently this service is not available</p>
+                    <div class="mb-0 card-title h5">Token Rate Table</div>
+                    <p class="mb-0 small">Set and manage token rates for distributors</p>
                   </div>
-                  <form class="needs-validation">
-                    <div class="card-body">
-                      <div class="mb-3">
-                        <label class="form-label" for="giftcard">Gift Card Number</label>
-                        <input placeholder="Gift Card Number" name="giftcard" required="" type="text" id="giftcard" class="form-control">
-                        <div class="invalid-feedback">
-                        </div>
-                      </div>
-                    </div>
-                    <div class="border-top card-footer">
-                      <div class="text-center">
-                        <button type="submit" class="btn btn-primary fs-5 me-3">
-                        <span class="spinner-border spinner-border-sm me-2" aria-hidden="true" style="display: none;">
-
-                        </span>
-                          <span>Submit</span>
-                        </button>
-                      </div>
-                    </div>
-                  </form>
+                  <div class="card-body">
+                    <table class="table table-bordered text-center" id="rateTable">
+                      <thead>
+                      <tr>
+                        <th>#</th>
+                        <th>Minimum Range</th>
+                        <th>Maximum Range</th>
+                        <th>Rate</th>
+                        <th>Actions</th>
+                      </tr>
+                      </thead>
+                      <tbody id="rateTableBody">
+                      <!-- Rows will be dynamically populated here -->
+                      </tbody>
+                    </table>
+                    <button class="btn btn-sm btn-primary" onclick="addNewRow()">Add Row</button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1804,8 +1803,140 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initial call to fetch token count on page load
     fetchTokenCount();
 });
-//---------------------------Handle Active Button --------------------------------------------------
+//---------------------------Token Rate Table --------------------------------------------------
+document.addEventListener('DOMContentLoaded', function () {
+    // Fetch the token rates when the page loads
+    fetchRates();
 
+    // Function to fetch rates and populate the table
+    function fetchRates() {
+        const email = sessionStorage.getItem('userEmail');
+        fetch(`http://localhost:8080/api/admin/token/viewRate?email=${encodeURIComponent(email)}`)
+            .then(response => response.json())
+            .then(data => populateTable(data))
+            .catch(error => Swal.fire('Error', 'Error fetching rates: ' + error.message, 'error'));
+    }
+
+    // Function to populate the table with fetched data
+    function populateTable(data) {
+        const tableBody = document.getElementById('rateTableBody');
+        tableBody.innerHTML = ''; // Clear previous rows
+        data.forEach((rate, index) => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${index + 1}</td>
+                <td><input type="number" class="form-control" value="${rate.minRange}" disabled></td>
+                <td><input type="number" class="form-control" value="${rate.maxRange}" disabled></td>
+                <td><input type="number" class="form-control" value="${rate.rate}" disabled></td>
+                <td>
+                    <button class="btn btn-sm btn-warning" onclick="editRow(this, ${rate.id}, ${rate.minRange}, ${rate.maxRange})">Edit</button>
+                    <button class="btn btn-sm btn-danger" onclick="deleteRow(${rate.minRange}, ${rate.maxRange})">Delete</button>
+                </td>
+            `;
+            tableBody.appendChild(row);
+        });
+    }
+
+    // Function to enable editing of a row
+    window.editRow = function (button, id, oldMinRange, oldMaxRange) {
+        const row = button.closest('tr');
+        const inputs = row.querySelectorAll('input');
+        const editMode = button.innerText === 'Edit';
+
+        // Toggle between edit and save mode
+        inputs.forEach(input => input.disabled = !editMode);
+        button.innerText = editMode ? 'Save' : 'Edit';
+
+        // If saving, call the modify API
+        if (!editMode) {
+            const minRange = inputs[0].value;
+            const maxRange = inputs[1].value;
+            const rate = inputs[2].value;
+            const email = sessionStorage.getItem('userEmail');
+
+            fetch(`http://localhost:8080/api/admin/token/modifyRate?email=${encodeURIComponent(email)}&newRate=${rate}&newMinRange=${minRange}&newMaxRange=${maxRange}&oldMinRange=${oldMinRange}&oldMaxRange=${oldMaxRange}`, {
+                method: 'PUT'
+            })
+            .then(response => {
+                if (response.ok) {
+                    Swal.fire('Success', 'Rate updated successfully', 'success');
+                    fetchRates(); // Refresh the table
+                } else {
+                    response.json().then(data => Swal.fire('Error', data.message, 'error'));
+                }
+            })
+            .catch(error => Swal.fire('Error', 'Error updating rate: ' + error.message, 'error'));
+        }
+    };
+
+    // Function to delete a row
+    window.deleteRow = function (minRange, maxRange) {
+        const email = sessionStorage.getItem('userEmail');
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fetch(`http://localhost:8080/api/admin/token/deleteRate?email=${encodeURIComponent(email)}&minRange=${minRange}&maxRange=${maxRange}`, { method: 'DELETE' })
+                    .then(response => {
+                        if (response.ok) {
+                            Swal.fire('Deleted!', 'Rate deleted successfully', 'success');
+                            fetchRates(); // Refresh the table
+                        } else {
+                            response.json().then(data => Swal.fire('Error', `Error deleting rate: ${data.message}`, 'error'));
+                        }
+                    })
+                    .catch(error => Swal.fire('Error', 'Error deleting rate: ' + error.message, 'error'));
+            }
+        });
+    };
+
+    // Function to add a new row for input
+    window.addNewRow = function () {
+        const tableBody = document.getElementById('rateTableBody');
+        const newRow = document.createElement('tr');
+
+        newRow.innerHTML = `
+            <td>#</td>
+            <td><input type="number" class="form-control" placeholder="Min Range"></td>
+            <td><input type="number" class="form-control" placeholder="Max Range"></td>
+            <td><input type="number" class="form-control" placeholder="Rate"></td>
+            <td>
+                <button class="btn btn-sm btn-success" onclick="saveNewRow(this)">Save</button>
+            </td>
+        `;
+        tableBody.appendChild(newRow);
+    };
+
+    // Function to save the newly added row
+    window.saveNewRow = function (button) {
+        const row = button.closest('tr');
+        const inputs = row.querySelectorAll('input');
+        const minRange = inputs[0].value;
+        const maxRange = inputs[1].value;
+        const rate = inputs[2].value;
+        const email = sessionStorage.getItem('userEmail');
+
+        // Call the create API
+        fetch(`http://localhost:8080/api/admin/token/createRate?email=${encodeURIComponent(email)}&rate=${rate}&minRange=${minRange}&maxRange=${maxRange}`, {
+            method: 'POST'
+        })
+        .then(response => {
+            if (response.ok) {
+                Swal.fire('Success', 'Rate created successfully', 'success');
+                fetchRates(); // Refresh the table
+            } else {
+                response.json().then(data => Swal.fire('Error', `Error creating rate: ${data.message}`, 'error'));
+            }
+        })
+        .catch(error => Swal.fire('Error', 'Error creating rate: ' + error.message, 'error'));
+    };
+});
   </script>
 
 

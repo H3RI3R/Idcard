@@ -164,72 +164,76 @@
     searchInput.addEventListener('input', fetchAndDisplayTransactions);
   });
   //  ------------------------------Create transection request api------------------------------------------
+document.addEventListener("DOMContentLoaded", function() {
+  const doneButton = document.getElementById("bankDoneButton1");
+  const doneButton1 = document.getElementById("upiDoneButton1");
 
-   document.addEventListener("DOMContentLoaded", function() {
-      const doneButton = document.getElementById("bankDoneButton1");
-      const doneButton1 = document.getElementById("upiDoneButton1");
+  // Bank Transfer Done Button
+  doneButton.addEventListener("click", function() {
+    const transactionID = document.getElementById("bankTransactionID1").value; // Use the correct ID for bank transaction
+    const amount = document.getElementById("selectPlan").value;
+    const email = sessionStorage.getItem('userEmail'); // Replace with the actual session email value
 
+    if (!transactionID) {
+      alert("Please enter the transaction ID.");
+      return;
+    }
 
-      doneButton.addEventListener("click", function() {
-        const transactionID = document.getElementById("transactionID").value;
-        const amount = document.getElementById("selectPlan").value;
-        const email = sessionStorage.getItem('userEmail'); // Replace with the actual session email value
-
-        if (!transactionID) {
-          alert("Please enter the transaction ID.");
-          return;
+    fetch(`http://localhost:8080/api/admin/distributor/createTransactionRequest?email=${email}&amount=${amount}&transactionId=${transactionID}`, {
+      method: 'POST'
+    })
+      .then(response => response.json())
+      .then(data => {
+        if (data.message) {
+          showAlert("Payment request submitted successfully.");
+           closeModal(this.id === 'bankDoneButton1' ? 'bankTransferModal1' : 'upiModal1');
+        } else {
+          showAlert("Error: " + (data.error || "Unknown error"));
         }
-
-        fetch(`http://localhost:8080/api/admin/distributor/createTransactionRequest?email=${email}&amount=${amount}&transactionId=${transactionID}`, {
-          method: 'POST'
-        })
-          .then(response => response.json())
-          .then(data => {
-          if (data.message) {
-            showAlert("Payment request submitted successfully.");
-          } else {
-            showAlert("Error: " + (data.error || "Unknown error"));
-          }
-        })
-          .catch(error => {
-          showAlert("Error: " + error.message);
-        });
+      })
+      .catch(error => {
+        showAlert("Error: " + error.message);
       });
+  });
 
+  // UPI Payment Done Button
+  doneButton1.addEventListener("click", function() {
+    const transactionID = document.getElementById("upiTransactionID1").value; // Use the correct ID for UPI transaction
+    const amount = document.getElementById("selectPlan").value;
+    const email = sessionStorage.getItem('userEmail'); // Replace with the actual session email value
 
-      doneButton1.addEventListener("click", function() {
-        const transactionID = document.getElementById("transactionID").value;
-        const amount = document.getElementById("selectPlan").value;
-        const email = sessionStorage.getItem('userEmail'); // Replace with the actual session email value
+    if (!transactionID) {
+      alert("Please enter the transaction ID.");
+      return;
+    }
 
-        if (!transactionID) {
-          alert("Please enter the transaction ID.");
-          return;
+    fetch(`http://localhost:8080/api/admin/distributor/createTransactionRequest?email=${email}&amount=${amount}&transactionId=${transactionID}`, {
+      method: 'POST'
+    })
+      .then(response => response.json())
+      .then(data => {
+        if (data.message) {
+          showAlert("Payment request submitted successfully.");
+           closeModal(this.id === 'bankDoneButton1' ? 'bankTransferModal1' : 'upiModal1');
+        } else {
+          showAlert("Error: " + (data.error || "Unknown error"));
         }
-
-        fetch(`http://localhost:8080/api/admin/distributor/createTransactionRequest?email=${email}&amount=${amount}&transactionId=${transactionID}`, {
-          method: 'POST'
-        })
-          .then(response => response.json())
-          .then(data => {
-          if (data.message) {
-            showAlert("Payment request submitted successfully.");
-          } else {
-            showAlert("Error: " + (data.error || "Unknown error"));
-          }
-        })
-          .catch(error => {
-          showAlert("Error: " + error.message);
-        });
+      })
+      .catch(error => {
+        showAlert("Error: " + error.message);
       });
+  });
 
-      function showAlert(message) {
-        const alert = document.getElementById("paymentAlert");
-        const alertMessage = document.getElementById("alertMessage");
-        alertMessage.textContent = message;
-        alert.classList.remove("d-none");
-      }
-    });
+  function closeModal(modalId) {
+    document.getElementById(modalId).style.display = 'none';
+  }
+  function showAlert(message) {
+    const alert = document.getElementById("paymentAlert");
+    const alertMessage = document.getElementById("alertMessage");
+    alertMessage.textContent = message;
+    alert.classList.remove("d-none");
+  }
+});
   //----------------------------------User name Api -----------------------------------
 
   document.addEventListener("DOMContentLoaded", function() {
@@ -886,3 +890,139 @@ function filterActiveAccounts() {
       alertContainer.classList.add('d-none');
     }, 5000);
   }
+
+
+  //---------------------------Token Rate Table --------------------------------------------------
+  document.addEventListener('DOMContentLoaded', function () {
+      // Fetch the token rates when the page loads
+      fetchRates();
+
+      // Function to fetch rates and populate the table
+      function fetchRates() {
+          const email = sessionStorage.getItem('userEmail');
+          fetch(`http://localhost:8080/api/admin/token/viewRate?email=${encodeURIComponent(email)}`)
+              .then(response => response.json())
+              .then(data => populateTable(data))
+              .catch(error => Swal.fire('Error', 'Error fetching rates: ' + error.message, 'error'));
+      }
+
+      // Function to populate the table with fetched data
+      function populateTable(data) {
+          const tableBody = document.getElementById('rateTableBody');
+          tableBody.innerHTML = ''; // Clear previous rows
+          data.forEach((rate, index) => {
+              const row = document.createElement('tr');
+              row.innerHTML = `
+                  <td>${index + 1}</td>
+                  <td><input type="number" class="form-control" value="${rate.minRange}" disabled></td>
+                  <td><input type="number" class="form-control" value="${rate.maxRange}" disabled></td>
+                  <td><input type="number" class="form-control" value="${rate.rate}" disabled></td>
+                  <td>
+                      <button class="btn btn-sm btn-warning" onclick="editRow(this, ${rate.id}, ${rate.minRange}, ${rate.maxRange})">Edit</button>
+                      <button class="btn btn-sm btn-danger" onclick="deleteRow(${rate.minRange}, ${rate.maxRange})">Delete</button>
+                  </td>
+              `;
+              tableBody.appendChild(row);
+          });
+      }
+
+      // Function to enable editing of a row
+      window.editRow = function (button, id, oldMinRange, oldMaxRange) {
+          const row = button.closest('tr');
+          const inputs = row.querySelectorAll('input');
+          const editMode = button.innerText === 'Edit';
+
+          // Toggle between edit and save mode
+          inputs.forEach(input => input.disabled = !editMode);
+          button.innerText = editMode ? 'Save' : 'Edit';
+
+          // If saving, call the modify API
+          if (!editMode) {
+              const minRange = inputs[0].value;
+              const maxRange = inputs[1].value;
+              const rate = inputs[2].value;
+              const email = sessionStorage.getItem('userEmail');
+
+              fetch(`http://localhost:8080/api/admin/token/modifyRate?email=${encodeURIComponent(email)}&newRate=${rate}&newMinRange=${minRange}&newMaxRange=${maxRange}&oldMinRange=${oldMinRange}&oldMaxRange=${oldMaxRange}`, {
+                  method: 'PUT'
+              })
+              .then(response => {
+                  if (response.ok) {
+                      Swal.fire('Success', 'Rate updated successfully', 'success');
+                      fetchRates(); // Refresh the table
+                  } else {
+                      response.json().then(data => Swal.fire('Error', data.message, 'error'));
+                  }
+              })
+              .catch(error => Swal.fire('Error', 'Error updating rate: ' + error.message, 'error'));
+          }
+      };
+
+      // Function to delete a row
+      window.deleteRow = function (minRange, maxRange) {
+          const email = sessionStorage.getItem('userEmail');
+          Swal.fire({
+              title: 'Are you sure?',
+              text: "You won't be able to revert this!",
+              icon: 'warning',
+              showCancelButton: true,
+              confirmButtonColor: '#3085d6',
+              cancelButtonColor: '#d33',
+              confirmButtonText: 'Yes, delete it!'
+          }).then((result) => {
+              if (result.isConfirmed) {
+                  fetch(`http://localhost:8080/api/admin/token/deleteRate?email=${encodeURIComponent(email)}&minRange=${minRange}&maxRange=${maxRange}`, { method: 'DELETE' })
+                      .then(response => {
+                          if (response.ok) {
+                              Swal.fire('Deleted!', 'Rate deleted successfully', 'success');
+                              fetchRates(); // Refresh the table
+                          } else {
+                              response.json().then(data => Swal.fire('Error', `Error deleting rate: ${data.message}`, 'error'));
+                          }
+                      })
+                      .catch(error => Swal.fire('Error', 'Error deleting rate: ' + error.message, 'error'));
+              }
+          });
+      };
+
+      // Function to add a new row for input
+      window.addNewRow = function () {
+          const tableBody = document.getElementById('rateTableBody');
+          const newRow = document.createElement('tr');
+
+          newRow.innerHTML = `
+              <td>#</td>
+              <td><input type="number" class="form-control" placeholder="Min Range"></td>
+              <td><input type="number" class="form-control" placeholder="Max Range"></td>
+              <td><input type="number" class="form-control" placeholder="Rate"></td>
+              <td>
+                  <button class="btn btn-sm btn-success" onclick="saveNewRow(this)">Save</button>
+              </td>
+          `;
+          tableBody.appendChild(newRow);
+      };
+
+      // Function to save the newly added row
+      window.saveNewRow = function (button) {
+          const row = button.closest('tr');
+          const inputs = row.querySelectorAll('input');
+          const minRange = inputs[0].value;
+          const maxRange = inputs[1].value;
+          const rate = inputs[2].value;
+          const email = sessionStorage.getItem('userEmail');
+
+          // Call the create API
+          fetch(`http://localhost:8080/api/admin/token/createRate?email=${encodeURIComponent(email)}&rate=${rate}&minRange=${minRange}&maxRange=${maxRange}`, {
+              method: 'POST'
+          })
+          .then(response => {
+              if (response.ok) {
+                  Swal.fire('Success', 'Rate created successfully', 'success');
+                  fetchRates(); // Refresh the table
+              } else {
+                  response.json().then(data => Swal.fire('Error', `Error creating rate: ${data.message}`, 'error'));
+              }
+          })
+          .catch(error => Swal.fire('Error', 'Error creating rate: ' + error.message, 'error'));
+      };
+  });

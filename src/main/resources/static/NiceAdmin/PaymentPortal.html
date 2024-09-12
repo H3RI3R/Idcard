@@ -292,8 +292,8 @@
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" data-bs-toggle="tab" href="#tab-other">
-            Other
+          <a class="nav-link" data-bs-toggle="tab" href="#tab-tokenRate">
+            Token Rate
           </a>
         </li>
         <li class="nav-item">
@@ -717,35 +717,38 @@
             </div>
           </div>
         </div>
-        <div class="tab-pane" id="tab-other">
+        <!----------------------------------Rate  table ------------------------->
+        <div class="tab-pane" id="tab-tokenRate">
           <div class="row g-4">
-            <div class="col-md-6 mx-auto">
+            <div class="col-md-10 mx-auto">
               <div class="border shadow card">
                 <div class="border-bottom card-header">
-                  <h5 class="card-header-title">
-                    Add Gift Card
-                  </h5>
-                  <p class="mb-0 small">Currently this service is not available</p>
+                  <div class="mb-0 card-title h5">Token Rate Table</div>
+                  <p class="mb-0 small">Set and manage token rates for distributors</p>
                 </div>
-                <form class="needs-validation">
-                  <div class="card-body">
-                    <div class="mb-3">
-                      <label class="form-label" for="giftcard">Gift Card Number</label>
-                      <input placeholder="Gift Card Number" name="giftcard" required="" type="text" id="giftcard" class="form-control">
-                      <div class="invalid-feedback">
-                      </div>
-                    </div>
+                <div class="card-body">
+                  <table class="table table-bordered text-center" id="rateTable">
+                    <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Minimum Range</th>
+                      <th>Maximum Range</th>
+                      <th>Rate</th>
+                      <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody id="rateTableBody">
+                    <!-- Rows will be dynamically populated here -->
+                    </tbody>
+                  </table>
+                  <div class="d-grid mt-4">
+                    <!-- Button Triggering the Modal -->
+                    <button class="btn btn-dark d-flex justify-content-center align-items-center" onclick="addNewRow()">
+                      <span class="fs-5 me-2">Add Row</span>
+                    </button>
                   </div>
-                  <div class="border-top card-footer">
-                    <div class="text-center">
-                      <button type="submit" class="btn btn-primary fs-5 me-3">
-                        <span class="spinner-border spinner-border-sm me-2" aria-hidden="true" style="display: none;">
-                        </span>
-                        <span>Submit</span>
-                      </button>
-                    </div>
-                  </div>
-                </form>
+
+                </div>
               </div>
             </div>
           </div>

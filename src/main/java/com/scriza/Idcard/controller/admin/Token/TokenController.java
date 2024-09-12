@@ -1,24 +1,24 @@
 package com.scriza.Idcard.controller.admin.Token;
 
+import com.scriza.Idcard.Entity.admin.Token.Rate;
 import com.scriza.Idcard.Entity.admin.Token.Token;
 import com.scriza.Idcard.Entity.admin.Token.TokenTransaction;
+import com.scriza.Idcard.Repository.admin.Token.RateRepository;
 import com.scriza.Idcard.service.admin.Token.TokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/admin/token")
 public class TokenController {
     @Autowired
     private TokenService tokenService;
-
+    @Autowired
+    private RateRepository rateRepository;
     @PostMapping("/create")
     public Map<String, String> createToken(@RequestParam String walletAddress,
                                            @RequestParam String email,
@@ -123,5 +123,56 @@ public class TokenController {
     public List<TokenTransaction> getTransactionsByEmail(@RequestParam String email) {
         return tokenService.getTransactionsByEmail(email);
     }
+    @PutMapping("/modifyRate")
+    public ResponseEntity<?> modifyRate(
+            @RequestParam String email,
+            @RequestParam double newRate,
+            @RequestParam double newMinRange,
+            @RequestParam double newMaxRange,
+            @RequestParam double oldMinRange,
+            @RequestParam double oldMaxRange) {
+        try {
+            Rate updatedRate = tokenService.modifyRate(email, newRate, newMinRange, newMaxRange, oldMinRange, oldMaxRange);
+            return ResponseEntity.ok(updatedRate);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Collections.singletonMap("message", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/createRate")
+    public ResponseEntity<?> createRate(
+            @RequestParam String email,
+            @RequestParam double rate,
+            @RequestParam double minRange,
+            @RequestParam double maxRange) {
+        try {
+            Rate newRate = tokenService.createRate(email, rate, minRange, maxRange);
+            return ResponseEntity.ok(newRate);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Collections.singletonMap("message", e.getMessage()));
+        }
+    }
+
+    @GetMapping("/viewRate")
+    public ResponseEntity<List<Rate>> viewRates(@RequestParam String email) {
+        List<Rate> rates = tokenService.viewRates(email);
+        return ResponseEntity.ok(rates);
+    }
+
+    @DeleteMapping("/deleteRate")
+    public ResponseEntity<?> deleteRate(
+            @RequestParam String email,
+            @RequestParam double minRange,
+            @RequestParam double maxRange) {
+        try {
+            tokenService.deleteRate(email, minRange, maxRange);
+            return ResponseEntity.ok("Rate deleted successfully");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
 
 }

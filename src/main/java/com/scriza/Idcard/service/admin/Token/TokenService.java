@@ -1,11 +1,13 @@
 package com.scriza.Idcard.service.admin.Token;
 
+import com.scriza.Idcard.Entity.admin.Token.Rate;
 import com.scriza.Idcard.Entity.admin.Token.Token;
 import com.scriza.Idcard.Entity.admin.Token.TokenTransaction;
 import com.scriza.Idcard.Entity.User;
 import com.scriza.Idcard.Entity.admin.distributor.ActivityAdmin;
 import com.scriza.Idcard.Entity.admin.distributor.ActivityDis;
 import com.scriza.Idcard.Entity.admin.retailer.Activity;
+import com.scriza.Idcard.Repository.admin.Token.RateRepository;
 import com.scriza.Idcard.Repository.admin.Token.TokenRepository;
 import com.scriza.Idcard.Repository.admin.Token.TokenTransactionRepository;
 import com.scriza.Idcard.Repository.UserRepository;
@@ -32,6 +34,9 @@ public class TokenService {
     private ActivityRepositoryDis activityRepositoryDis;
     @Autowired
     private ActivityRepositoryAdmin activityRepositoryAdmin;
+
+    @Autowired
+    private RateRepository rateRepository;
 
     @Autowired
     private TokenTransactionRepository tokenTransactionRepository;
@@ -274,6 +279,59 @@ public class TokenService {
         receivedTransactions.addAll(sentTransactions);
 
         return receivedTransactions;
+    }
+    // Modify rate and range
+    public Rate modifyRate(String email, double newRate, double newMinRange, double newMaxRange, double oldMinRange, double oldMaxRange) {
+        List<Rate> conflictingRates = rateRepository.findConflictingRates(null, email, newMinRange, newMaxRange);
+
+        if (oldMinRange == newMinRange && oldMaxRange == newMaxRange) {
+            conflictingRates.removeIf(rate -> rate.getMinRange() == oldMinRange && rate.getMaxRange() == oldMaxRange);
+        }
+
+        if (!conflictingRates.isEmpty()) {
+            throw new RuntimeException("New range conflicts with an existing range.");
+        }
+
+        Optional<Rate> optionalRate = rateRepository.findByMinRangeAndMaxRangeAndEmail(oldMinRange, oldMaxRange, email);
+        if (optionalRate.isPresent()) {
+            Rate rate = optionalRate.get();
+            rate.setRate(newRate);
+            rate.setMinRange(newMinRange);
+            rate.setMaxRange(newMaxRange);
+            return rateRepository.save(rate);
+        } else {
+            throw new RuntimeException("Rate not found.");
+        }
+    }
+
+    public Rate createRate(String email, double rate, double minRange, double maxRange) {
+        if (isRangeConflicting(email, minRange, maxRange)) {
+            throw new RuntimeException("Rate range conflicts with an existing range.");
+        }
+
+        Rate newRate = new Rate();
+        newRate.setRate(rate);
+        newRate.setMinRange(minRange);
+        newRate.setMaxRange(maxRange);
+        newRate.setEmail(email);
+
+        return rateRepository.save(newRate);
+    }
+
+    private boolean isRangeConflicting(String email, double minRange, double maxRange) {
+        List<Rate> conflictingRates = rateRepository.findByRange(email, minRange, maxRange);
+        return !conflictingRates.isEmpty();
+    }
+
+    public List<Rate> viewRates(String email) {
+        return rateRepository.findByEmail(email); // Fetch rates filtered by email
+    }
+
+    public void deleteRate(String email, double minRange, double maxRange) {
+        Rate rate = rateRepository.findByMinRangeAndMaxRangeAndEmail(minRange, maxRange, email)
+                .orElseThrow(() -> new RuntimeException("Rate not found for the specified range"));
+
+        rateRepository.delete(rate);
     }
 
 }
