@@ -161,10 +161,10 @@ public class RetailerController {
         tokenRepository.save(token);
 
         // Create the ID card HTML content
-        String htmlContent = generateIdCardHtml(name, businessName, businessAddress, phoneNumber, emailAddress, permanentAddress, currentAddress, photo);
+
 
         // Convert HTML to PDF
-        String pdfPath = convertHtmlToPdf(htmlContent);
+
 
         IdCard idCard = new IdCard();
         idCard.setName(name);
@@ -176,7 +176,6 @@ public class RetailerController {
         idCard.setCurrentAddress(currentAddress);
         idCard.setPhoto(photo.getBytes());
         idCard.setCreatorEmail(retailerEmail);
-        idCard.setImagePath(pdfPath);
 
         IdCard savedIdCard = idCardRepository.save(idCard);
 
