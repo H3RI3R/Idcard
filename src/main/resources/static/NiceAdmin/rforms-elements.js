@@ -1,67 +1,45 @@
-// Get the input fields, canvas element, and photo input
-var schoolNameInput = document.querySelector('input[name="school_name"]');
-var schoolSubTitleInput = document.querySelector('input[name="school_sub_title"]');
-var photoInput = document.getElementById('photoInput');
-var photoPreview = document.getElementById('photoPreview');
-var canvas = document.getElementById('cardCanvas');
-var ctx = canvas.getContext('2d');
+  //---------------------------------- create ID card Api -----------------------------------
 
-// Function to clear and redraw the canvas
-function drawCanvas() {
-    // Clear the canvas
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  //----------------------------------User name Api -----------------------------------
 
-    // Redraw the background image
-    var img = new Image();
-    img.src = document.getElementById('template').value;
-    img.onload = function() {
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+  document.addEventListener("DOMContentLoaded", function() {
+    // Function to fetch the user's name from the API
+    function fetchUserName() {
+      // Get the email from session data
+      const email = sessionStorage.getItem('userEmail'); // Ensure this is how you fetch email from the session
 
-        // Draw the text
-        ctx.font = "bold 40px Arial"; // Bigger and bold font for School Name
-        ctx.fillStyle = "black"; // Text color
-        ctx.textAlign = "center"; // Center text horizontally
-        ctx.textBaseline = "middle"; // Center text vertically
-        ctx.fillText(schoolNameInput.value, canvas.width / 2, canvas.height / 4); // Positioned at the top
+      if (email) {
+        fetch(`http://localhost:8080/api/admin/distributor/name?email=${encodeURIComponent(email)}`)
+          .then(response => response.json())
+          .then(data => {
+          const userName = data.name || 'Guest'; // Use 'Guest' if no name is found
+          // Update the HTML elements with the fetched name
+          document.querySelector('.nav-profile .dropdown-toggle').textContent = userName;
+          document.querySelector('.dropdown-header h6').textContent = userName;
+        })
+          .catch(error => {
+          console.error('Error fetching name:', error);
+          // Fallback to 'Guest' in case of an error
+          document.querySelector('.nav-profile .dropdown-toggle').textContent = 'Guest';
+          document.querySelector('.dropdown-header h6').textContent = 'Guest';
+        });
+      } else {
+        console.error('No email found in session.');
+        // Fallback to 'Guest' if email is missing
+        document.querySelector('.nav-profile .dropdown-toggle').textContent = 'Guest';
+        document.querySelector('.dropdown-header h6').textContent = 'Guest';
+      }
+    }
 
-        ctx.font = "30px Arial"; // Smaller font for School Sub Title
-        ctx.fillText(schoolSubTitleInput.value, canvas.width / 2, canvas.height / 3); // Positioned below School Name
-
-        // Draw the photo
-        if (photoInput.files.length > 0) {
-            var photo = new Image();
-            var reader = new FileReader();
-            reader.onload = function(e) {
-                photo.src = e.target.result;
-                photo.onload = function() {
-                    var x = canvas.width / 10; // Position from the left
-                    var y = canvas.height / 2; // Position from the top
-                    var size = 100; // Photo size
-
-                    // Draw photo
-                    ctx.drawImage(photo, x, y, size, size);
-
-                    // Display the uploaded photo in the preview container
-                    var img = document.createElement('img');
-                    img.src = URL.createObjectURL(photoInput.files[0]);
-                    photoPreview.innerHTML = ''; // Clear previous preview
-                    photoPreview.appendChild(img);
-                };
-            };
-            reader.readAsDataURL(photoInput.files[0]);
-        }
-    };
-}
-
-// Update canvas on input change
-schoolNameInput.onkeyup = drawCanvas;
-schoolSubTitleInput.onkeyup = drawCanvas;
-photoInput.addEventListener('change', drawCanvas);
-document.getElementById('template').addEventListener('change', drawCanvas);
-
-// Initial load
-window.onload = function() {
-    var template = document.getElementById('template');
-    var event = new Event('change');
-    template.dispatchEvent(event);
-};
+    // Call the function on page load
+    fetchUserName();
+  });
+  //--------------------------------Logout api ----------------------
+  document.addEventListener("DOMContentLoaded", function() {
+    // Add event listener to the logout button
+    document.getElementById('logoutBtn').addEventListener('click', function(event) {
+      event.preventDefault(); // Prevent the default link behavior
+      sessionStorage.clear(); // Clear session storage
+      window.location.href = '/login.html'; // Redirect to login page or any other page
+    });
+  });

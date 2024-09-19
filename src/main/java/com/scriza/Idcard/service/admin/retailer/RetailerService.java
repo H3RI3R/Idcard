@@ -325,9 +325,6 @@ public List<UserWithToken> getAllRetailersWithTokens() {
         tokenRepository.save(token);
 
         // Create the ID card image
-        String imagePath = "/Users/ritiksoni/Documents/idCard.png";
-        String backgroundImagePath = "/Users/ritiksoni/Downloads/Download/idCardBackgroundImage.png";
-        generateIdCardImage(name, businessName, businessAddress, phoneNumber, photo,emailAddress,permanentAddress,currentAddress,backgroundImagePath, imagePath);
 
         IdCard idCard = new IdCard();
         idCard.setName(name);
@@ -339,7 +336,7 @@ public List<UserWithToken> getAllRetailersWithTokens() {
         idCard.setCurrentAddress(currentAddress);
         idCard.setPhoto(photo.getBytes());
         idCard.setCreatorEmail(retailerEmail);
-        idCard.setImagePath(imagePath);
+
 
         IdCard savedIdCard = idCardRepository.save(idCard);
 
