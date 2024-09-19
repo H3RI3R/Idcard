@@ -296,28 +296,24 @@
                 <div class="card">
                   <div class="border-bottom card-header">
                     <div class="mb-0 card-title h5">
-                      Plans</div>
+                      Purchase Tokens
+                    </div>
                     <p class="mb-0 small">
-                      Purchase a plan to get started
+                      Enter the token amount to get started
                     </p>
                   </div>
                   <div class="card-body">
                     <form>
                       <div class="mb-3">
-                        <label class="form-label">Select Plan <span class="text-danger">*</span></label>
-                        <select aria-label="Default select example" name="amount" id="selectPlan" required class="form-select">
-                          <option value="1" class="hidden_feature" style="display: none;">₹ 1 Plan - 0 Token</option>
-                          <option value="22" selected>₹ 22 Plan - 10 Tokens</option>
-                          <option value="55">₹ 55 Plan - 25 Tokens</option>
-                          <option value="110">₹ 110 Plan - 50 Tokens</option>
-                          <option value="220">₹ 220 Plan - 100 Tokens</option>
-                          <option value="385">₹ 385 Plan - 175 Tokens</option>
-                          <option value="550">₹ 550 Plan - 250 Tokens</option>
-                          <option value="1100">₹ 1100 Plan - 500 Tokens</option>
-                        </select>
+                        <label class="form-label">Enter Token Amount <span class="text-danger">*</span></label>
+                        <input type="number" id="inputTokenAmount" class="form-control" placeholder="Enter token amount" required oninput="handleTokenInput()" maxlength="6">
                       </div>
 
-                      <!-- Payment Method Selection -->
+                      <div class="mb-3 d-flex align-items-center justify-content-between">
+                        <p id="rateDisplay" class="mb-0 text-success">Rate: <span id="rateValue"></span></p>
+                        <p id="payableAmount" class="mb-0 fw-bold text-success">Payable Amount: <span id="payableAmountValue"></span></p>
+                      </div>
+
                       <div class="mb-3">
                         <label class="form-label">Select Payment Method <span class="text-danger">*</span></label>
                         <select id="paymentMethod" required class="form-select">
@@ -327,58 +323,49 @@
                         </select>
                       </div>
 
-
                       <div class="d-grid mt-4">
-                        <!-- Button Triggering the Modal -->
                         <button type="button" class="btn btn-dark d-flex justify-content-center align-items-center" onclick="handlePayment()">
-                          <span class="fs-5 me-2">✨ Pay with</span>
-                          <img src="assets/img/upi.svg" style="height: 20px; width: auto;" alt="Payment">
+                          <span class="fs-5 me-2">✨ Pay Now</span>
                         </button>
                       </div>
                     </form>
 
-                    <!-- Bank Transfer Modal -->
                     <div class="modal" id="bankTransferModal1" style="display: none;">
                       <div class="modal-dialog">
                         <div class="modal-content">
                           <div class="modal-body text-center">
                             <p class="text-muted small mb-4">Use the following bank details to complete the transfer:</p>
-                            <!-- Container for Bank Accounts -->
                             <div id="bankAccountsContainer"></div>
-                            <!-- Transaction Code Input -->
                             <p class="text-muted small mb-2">If payment is done, enter the transaction code below:</p>
                             <input type="text" id="bankTransactionID1" class="form-control mb-3" placeholder="Transaction ID">
-                            <button type="button" class="btn btn-dark" id="bankDoneButton1">Done</button>
+                            <button type="button" class="btn btn-dark" id="bankDoneButton1">Submit</button>
                             <button type="button" class="btn btn-secondary mt-2" onclick="closeModal('bankTransferModal1')">Close</button>
                           </div>
                         </div>
                       </div>
                     </div>
-                    <!-- Payment Modal -->
-                    <!-- UPI Payment Modal -->
+
                     <div class="modal" id="upiModal1" style="display: none;">
                       <div class="modal-dialog">
                         <div class="modal-content">
                           <div class="modal-body text-center">
                             <p class="text-muted small mb-4">Open your UPI app and scan the QR code below to pay the amount:</p>
-                            <!-- Container for UPI Accounts -->
                             <div id="upiAccountsContainer"></div>
-                            <!-- Transaction Code Input -->
                             <p class="text-muted small mb-2">If payment is done, enter the transaction code below:</p>
                             <input type="text" id="upiTransactionID1" class="form-control mb-3" placeholder="Transaction ID">
-                            <button type="button" class="btn btn-dark" id="upiDoneButton1">Done</button>
+                            <button type="button" class="btn btn-dark" id="upiDoneButton1">Submit</button>
                             <button type="button" class="btn btn-secondary mt-2" onclick="closeModal('upiModal1')">Close</button>
                           </div>
                         </div>
                       </div>
                     </div>
 
-                    <!-- Bootstrap Alert (Initially Hidden) -->
                     <div id="paymentAlert" class="alert alert-success alert-dismissible fade show d-none" role="alert">
                       <span id="alertMessage"></span>
                       <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                   </div>
+
                 </div>
               </div>
             </div>

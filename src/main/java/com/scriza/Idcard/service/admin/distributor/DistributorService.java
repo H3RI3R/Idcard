@@ -237,6 +237,7 @@ public class DistributorService {
         transactionRequestRepository.save(request);
     }
 
+
     public List<TransactionRequest> getTransactionRequestsByCreatorEmail(String creatorEmail) {
         return transactionRequestRepository.findByCreatorEmailOrderByTimestampDesc(creatorEmail);
     }

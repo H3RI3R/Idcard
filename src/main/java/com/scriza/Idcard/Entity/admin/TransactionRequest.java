@@ -24,5 +24,7 @@ public class TransactionRequest {
     private String status;
     private Date timestamp;
 
+
+
     // Getters and setters...
 }
