@@ -141,6 +141,12 @@
         <span>Dashboard</span>
       </a>
     </li><!-- End Dashboard Nav -->
+    <li class="nav-item">
+      <a class="nav-link collapsed" href="rPaymentPortal.html">
+        <i class="bi bi-credit-card"></i>
+        <span>Payment Portal</span>
+      </a>
+    </li>
 
 
 
@@ -256,8 +262,11 @@
                   <input type="text" id="currentAddress" name="currentAddress" placeholder="CurrentAddress" class="form-control">
                   <input type="text" id="permanentAddress" name="permanentAddress" placeholder="Permanent Address" class="form-control">
                   <input type="number" id="phoneNumber" name="phoneNumber" placeholder="PhoneNumber" class="form-control">
-                  <button class="btn btn-dark"  onclick="generateIdCard()" >Submit</button>
-<!--                  <iframe id="previewFrame" style="position: absolute; height: 100%; border: none"></iframe>-->
+
+                  <!-- Use type="submit" for proper form submission -->
+                  <button type="submit" class="btn btn-dark">Submit</button>
+
+                  <iframe id="previewFrame" style="position: absolute; height: 100% ; border: none display:none;"></iframe>
                 </form>
             </div>
           </div>
