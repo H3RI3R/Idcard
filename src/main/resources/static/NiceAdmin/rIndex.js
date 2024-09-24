@@ -495,79 +495,92 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 //---------------------------------- Activity  Api -----------------------------------
-document.addEventListener("DOMContentLoaded", function() {
-    function maskPhoneNumber(details) {
-        // Regular expression to identify phone numbers
-        const phoneRegex = /\d{10,}/;
+document.addEventListener('DOMContentLoaded', function() {
+    const userEmail = sessionStorage.getItem('userEmail');
+    const activityApiUrl = `http://localhost:8080/api/admin/retailer/recent-activities?userEmail=${encodeURIComponent(userEmail)}`;
 
-        // Find the phone number in the details
-        return details.replace(phoneRegex, (match) => {
-            // Mask all but the last 4 digits
-            return match.slice(0, -4).replace(/./g, 'x') + match.slice(-4);
-        });
-    }
-
-    function loadRecentActivities() {
-        const userEmail = sessionStorage.getItem('userEmail');
-
-        if (!userEmail) {
-            console.error('User email not found in session storage');
-            return;
-        }
-
-        const apiUrl = `http://localhost:8080/api/admin/retailer/recent-activities?userEmail=${encodeURIComponent(userEmail)}`;
-
-        fetch(apiUrl)
+    // Function to fetch and display activities
+    function fetchAndDisplayActivities() {
+        fetch(activityApiUrl)
             .then(response => response.json())
-            .then(activities => {
-            const activityList = document.getElementById('activity-list');
-            activityList.innerHTML = '';
+            .then(data => {
+                console.log('All activities:', data); // Debugging
+                const activityList = document.getElementById('activity-list');
+                activityList.innerHTML = ''; // Clear existing content
 
-            if (activities.length > 0) {
-                activities.forEach(activity => {
-                    const activityItem = document.createElement('div');
-                    activityItem.classList.add('activity-item', 'd-flex', 'align-items-center', 'mb-3');
+                const now = new Date();
+                const oneDayAgo = new Date(now.getTime() - (24 * 60 * 60 * 1000)); // 24 hours ago
+                console.log('Current Time:', now);
+                console.log('One Day Ago:', oneDayAgo);
 
-                    // Convert timestamp to a human-readable format
-                    let formattedDate;
-                    try {
-                        const date = new Date(activity.timestamp);
-                        if (isNaN(date.getTime())) {
-                            formattedDate = activity.timestamp;
+                data.forEach(activity => {
+                    // Replace IST with GMT+0530 for proper date parsing
+                    const activityDateStr = activity.timestamp.replace('IST', 'GMT+0530');
+                    const activityDate = new Date(activityDateStr);
+                    console.log('Activity Date:', activityDate); // Log each activity date
+
+                    if (activityDate >= oneDayAgo) {
+                        const timeAgo = formatTimeAgo(activityDate);
+
+                        let badgeColor;
+                        const activityType = activity.type;
+
+                        // Check for transaction types
+                        if (activityType.includes('TRANSACTION_ACCEPTED')) {
+                            badgeColor = 'bg-green'; // Green color for transaction accepted
+                        } else if (activityType.includes('TRANSACTION_REJECTED')) {
+                            badgeColor = 'bg-red'; // Red color for transaction rejected
+                        } else if (activityType === 'RETAILER_TOKEN_REQUEST') {
+                            badgeColor = 'bg-blue'; // Blue color for token request
+                        } else if (activityType === 'ID_CARD_CREATION') {
+                            badgeColor = 'bg-sky-blue'; // Sky blue color for ID card creation
                         } else {
-                            formattedDate = date.toLocaleString();
+                            badgeColor = 'bg-muted'; // Default color
                         }
-                    } catch (error) {
-                        formattedDate = activity.timestamp;
+
+                        const activityItem = document.createElement('div');
+                        activityItem.className = 'activity-item d-flex';
+
+                        const timeLabel = document.createElement('div');
+                        timeLabel.className = 'activite-label';
+                        timeLabel.textContent = timeAgo;
+
+                        const badge = document.createElement('i');
+                        badge.className = `bi bi-circle-fill activity-badge ${badgeColor} align-self-start`;
+
+                        const content = document.createElement('div');
+                        content.className = 'activity-content';
+                        content.innerHTML = `${activity.details}`;
+
+                        activityItem.appendChild(timeLabel);
+                        activityItem.appendChild(badge);
+                        activityItem.appendChild(content);
+
+                        activityList.appendChild(activityItem);
                     }
-
-                    // Mask phone numbers in details if necessary
-                    const maskedDetails = maskPhoneNumber(activity.details);
-
-                    activityItem.innerHTML = `
-                            <div class="d-flex align-items-center">
-                                <div class="activity-icon bg-success text-light me-3">
-                                    <i class="bi bi-check-circle"></i>
-                                </div>
-                                <div>
-                                    <p class="mb-1"><strong>${activity.type}</strong> - ${maskedDetails}</p>
-                                    <small class="text-muted">${formattedDate}</small>
-                                </div>
-                            </div>
-                        `;
-
-                    activityList.appendChild(activityItem);
                 });
-            } else {
-                activityList.innerHTML = '<p>No recent activities.</p>';
-            }
-        })
-            .catch(error => {
-            console.error('Error fetching activities:', error);
-        });
+
+                // Handle case where no activities were found
+                if (activityList.innerHTML === '') {
+                    activityList.innerHTML = '<p>No activities found in the last 24 hours.</p>';
+                }
+            })
+            .catch(error => console.error('Error fetching activities:', error));
     }
 
-    loadRecentActivities();
+    // Helper function to format time ago
+    function formatTimeAgo(date) {
+        const now = new Date();
+        const diff = now - date;
+        const minutes = Math.floor(diff / (1000 * 60));
+        const hours = Math.floor(diff / (1000 * 60 * 60));
+
+        if (hours < 1) return `${minutes} min${minutes > 1 ? 's' : ''} ago`;
+        return `${hours} hr${hours > 1 ? 's' : ''} ago`;
+    }
+
+    // Fetch and display activities
+    fetchAndDisplayActivities();
 });
 //----------------------------------User name Api -----------------------------------
 

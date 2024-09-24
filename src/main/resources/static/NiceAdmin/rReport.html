@@ -215,29 +215,29 @@
 
     <section class="section">
         <div class="row">
-            <div class="col-lg-10">
+            <div class="col-lg-12">
                 <div class="card">
-                    <div class="card-body">
+                    <div class="card-body" style="height: 700px;">
                         <h5 class="card-title">ID Card Creation Table</h5>
-                        <form id="IDCreationTable">
-                            <div class="card-body pb-0">
-                                <div class="table-responsive" style="max-height: 300px; overflow-y: auto;">
-                                    <table class="table table-borderless">
-                                        <thead>
-                                        <tr>
-                                            <th scope="col">ID Card Name</th>
-                                            <th scope="col">Status</th>
-                                            <th scope="col">Transaction ID</th>
-                                            <th scope="col">Date & Time</th>
-                                        </tr>
-                                        </thead>
-                                        <tbody id="retailerTableBody">
-                                        <!-- Rows will be dynamically added here -->
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </form>
+
+                        <!-- Table container with search and entries per page options -->
+                        <div class="table-container">
+                            <table id="idCardTable" class="table datatable">
+                                <thead>
+                                <tr>
+                                    <th>ID Card Name</th>
+                                    <th>Phone Number</th>
+                                    <th>Business Name</th>
+                                    <th>Status</th>
+                                    <th>Transaction ID</th>
+                                    <th>Date & Time</th>
+                                </tr>
+                                </thead>
+                                <tbody id="retailerTableBody">
+                                <!-- Rows will be dynamically added here -->
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
