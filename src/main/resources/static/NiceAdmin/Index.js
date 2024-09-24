@@ -6,54 +6,75 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('userEmail1').innerText = userEmail;});
 
 //---------------------------------- Table  Api -----------------------------------
-document.addEventListener('DOMContentLoaded', function() {
-    // Fetch the user email from session storage
-    const userEmail = sessionStorage.getItem('userEmail');
+document.addEventListener('DOMContentLoaded', async function () {
+    const userEmail = sessionStorage.getItem('userEmail'); // Get the user email from the session
+    const retailerTableBody = document.getElementById('retailerTableBody'); // Reference to the table body
 
-    if (userEmail) {
-        // Define the API endpoints
-        const getUserInfoUrl = `http://localhost:8080/api/admin/distributor/userInfo?email=${encodeURIComponent(userEmail)}`;
+    // Fetch retailers created by the distributor
+    const retailerListUrl = `http://localhost:8080/api/admin/retailer/list-by-creator?creatorEmail=${encodeURIComponent(userEmail)}`;
 
-        // Fetch user info
-        fetch(getUserInfoUrl)
-            .then(response => response.json())
-            .then(userData => {
-            if (userData.phoneNumber) {
-                // Fetch token count using the phone number
-                const getTokenCountUrl = `http://localhost:8080/api/admin/token/count?identifier=${encodeURIComponent(userData.phoneNumber)}`;
+    try {
+        const response = await fetch(retailerListUrl);
+        const data = await response.json();
 
-                return fetch(getTokenCountUrl)
-                    .then(response => response.json())
-                    .then(tokenData => {
-                    if (tokenData.tokenCount !== undefined) {
-                        // Manually set the retailer ID and populate the table
-                        const retailerTableBody = document.getElementById('retailerTableBody');
-                        const retailerRow = `
-                                    <tr>
-                                        <td>1</td> <!-- Manually assigned ID -->
-                                        <td>${userData.name || 'N/A'}</td>
-                                        <td>${userData.email || 'N/A'}</td>
-                                        <td>${userData.company || 'N/A'}</td>
-                                        <td>${tokenData.tokenCount}</td>
-                                        <td>${userData.phoneNumber || 'N/A'}</td>
-                                    </tr>
-                                `;
-                        retailerTableBody.innerHTML = retailerRow;
-                    } else {
-                        console.error('Error fetching token count:', tokenData.error);
-                    }
-                });
-            } else {
-                console.error('Phone number not found in user data.');
-            }
-        })
-            .catch(error => console.error('Error:', error));
-    } else {
-        console.error('User email is not found in session storage.');
+        if (data.retailers && data.retailers.length > 0) {
+            // Clear existing table data
+            retailerTableBody.innerHTML = '';
+
+            const retailerPromises = data.retailers.map(async (retailer) => {
+                const tokenCountUrl = `http://localhost:8080/api/admin/distributor/totalAcceptedTokens?userEmail=${encodeURIComponent(retailer.email)}`;
+
+                try {
+                    const tokenResponse = await fetch(tokenCountUrl);
+                    const tokenData = await tokenResponse.json();
+                    return {
+                        id: retailer.id,
+                        name: retailer.name,
+                        email: retailer.email,
+                        company: retailer.company,
+                        tokenCount: tokenData.totalAcceptedAmount || 0, // Use 0 if not present
+                        phoneNumber: retailer.phoneNumber
+                    };
+                } catch (tokenError) {
+                    console.error(`Error fetching total accepted tokens for retailer ${retailer.name}:`, tokenError);
+                    return {
+                        id: retailer.id,
+                        name: retailer.name,
+                        email: retailer.email,
+                        company: retailer.company,
+                        tokenCount: 0, // Default to 0 on error
+                        phoneNumber: retailer.phoneNumber
+                    };
+                }
+            });
+
+            // Wait for all token counts to be fetched
+            const retailersWithTokenCounts = await Promise.all(retailerPromises);
+
+            // Sort retailers by total accepted token count in descending order
+            retailersWithTokenCounts.sort((a, b) => b.tokenCount - a.tokenCount); // Sort in descending order
+
+            // Populate table with sorted data
+            retailersWithTokenCounts.forEach(retailer => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${retailer.id}</td>
+                    <td>${retailer.name}</td>
+                    <td>${retailer.email}</td>
+                    <td>${retailer.company}</td>
+                    <td>${retailer.tokenCount}</td>
+                    <td>${retailer.phoneNumber}</td>
+                `;
+                retailerTableBody.appendChild(row);
+            });
+        } else {
+            retailerTableBody.innerHTML = '<tr><td colspan="6">No retailers found.</td></tr>';
+        }
+    } catch (error) {
+        console.error('Error fetching retailers:', error);
+        retailerTableBody.innerHTML = '<tr><td colspan="6">Error fetching retailers.</td></tr>';
     }
 });
-
-
 
 //---------------------------------- toggleSidebar  method -----------------------------------
 /**
@@ -490,7 +511,7 @@ document.addEventListener('DOMContentLoaded', function() {
 //});
 //---------------------------------- Activity  Api -----------------------------------
 document.addEventListener('DOMContentLoaded', function() {
-    const userEmail = sessionStorage.getItem('userEmail'); // Replace with code to get the user email from the session
+    const userEmail = sessionStorage.getItem('userEmail'); // Get the user email from the session
     const distributorActivityApiUrl = `http://localhost:8080/api/admin/distributor/distributor?distributorEmail=${userEmail}`;
 
     // Function to fetch and display distributor activities
@@ -498,71 +519,69 @@ document.addEventListener('DOMContentLoaded', function() {
         fetch(distributorActivityApiUrl)
             .then(response => response.json())
             .then(data => {
-            console.log('All distributor activities:', data); // Debugging
-            const activityList = document.getElementById('activity-list');
-            activityList.innerHTML = ''; // Clear existing content
+                console.log('All distributor activities:', data); // Debugging
+                const activityList = document.getElementById('activity-list');
+                activityList.innerHTML = ''; // Clear existing content
 
-            data.forEach(activity => {
-                // Convert activity timestamp to a human-readable format
-                const activityDate = new Date(activity.timestamp);
-                const timeAgo = formatTimeAgo(activityDate);
+                const now = new Date();
 
-                // Determine badge color based on activity type
-                let badgeColor;
-                switch (activity.type) {
-                    case 'RETAILER_CREATION':
-                    case 'DISTRIBUTOR_CREATION':
-                    case 'TOKEN_CREATION':
-                        badgeColor = 'text-primary'; // Sky blue
-                        break;
-                    case 'TOKEN_SENT':
-                        badgeColor = 'text-warning'; // Yellow
-                        break;
-                    case 'DISTRIBUTOR_DELETION':
-                    case 'RETAILER_DELETION':
-                        badgeColor = 'text-danger'; // Red
-                        break;
-                    default:
-                        badgeColor = 'text-muted'; // Default color
-                }
+                data.forEach(activity => {
+                    // Convert activity timestamp to a Date object
+                    const activityDate = new Date(activity.timestamp);
+                    const timeDiffInHours = Math.abs(now - activityDate) / (1000 * 60 * 60);
+                    const timeDiffInMinutes = Math.floor(timeDiffInHours * 60);
 
-                // Create activity item
-                const activityItem = document.createElement('div');
-                activityItem.className = 'activity-item d-flex';
+                    // Only show activities within the last 24 hours
+                    if (timeDiffInHours <= 24) {
+                        // Determine badge color based on activity type
+                        let badgeColor;
+                        switch (activity.type) {
+                            case 'RETAILER_CREATION':
+                            case 'DISTRIBUTOR_CREATION':
+                            case 'TOKEN_CREATION':
+                                badgeColor = 'text-primary'; // Sky blue
+                                break;
+                            case 'TOKEN_SENT':
+                                badgeColor = 'text-warning'; // Yellow
+                                break;
+                            case 'DISTRIBUTOR_DELETION':
+                            case 'RETAILER_DELETION':
+                                badgeColor = 'text-danger'; // Red
+                                break;
+                            default:
+                                badgeColor = 'text-muted'; // Default color
+                        }
 
-                const timeLabel = document.createElement('div');
-                timeLabel.className = 'activite-label';
-                timeLabel.textContent = timeAgo;
+                        // Create activity item
+                        const activityItem = document.createElement('div');
+                        activityItem.className = 'activity-item d-flex';
 
-                const badge = document.createElement('i');
-                badge.className = `bi bi-circle-fill activity-badge ${badgeColor} align-self-start`;
+                        const timeLabel = document.createElement('div');
+                        timeLabel.className = 'activite-label';
 
-                const content = document.createElement('div');
-                content.className = 'activity-content';
-                content.innerHTML = `${activity.description}`;
+                        // Display time in hours or minutes
+                        if (timeDiffInHours < 1) {
+                            timeLabel.textContent = `${timeDiffInMinutes} min${timeDiffInMinutes !== 1 ? 's' : ''} ago`;
+                        } else {
+                            timeLabel.textContent = `${Math.floor(timeDiffInHours)} hr${Math.floor(timeDiffInHours) !== 1 ? 's' : ''} ago`;
+                        }
 
-                activityItem.appendChild(timeLabel);
-                activityItem.appendChild(badge);
-                activityItem.appendChild(content);
+                        const badge = document.createElement('i');
+                        badge.className = `bi bi-circle-fill activity-badge ${badgeColor} align-self-start`;
 
-                activityList.appendChild(activityItem);
-            });
-        })
+                        const content = document.createElement('div');
+                        content.className = 'activity-content';
+                        content.innerHTML = `${activity.description}`;
+
+                        activityItem.appendChild(timeLabel);
+                        activityItem.appendChild(badge);
+                        activityItem.appendChild(content);
+
+                        activityList.appendChild(activityItem);
+                    }
+                });
+            })
             .catch(error => console.error('Error fetching distributor activities:', error));
-    }
-
-    // Helper function to format time ago
-    function formatTimeAgo(date) {
-        const now = new Date();
-        const diff = now - date;
-        const minutes = Math.floor(diff / (1000 * 60));
-        const hours = Math.floor(diff / (1000 * 60 * 60));
-        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-
-        if (days > 0) return `${days} day${days > 1 ? 's' : ''}`;
-        if (hours > 0) return `${hours} hr${hours > 1 ? 's' : ''}`;
-        if (minutes > 0) return `${minutes} min${minutes > 1 ? 's' : ''}`;
-        return 'Just now';
     }
 
     // Fetch and display distributor activities

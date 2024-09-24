@@ -281,6 +281,32 @@ public class DistributorController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
     }
+    @GetMapping("/totalAcceptedTokens")
+    public ResponseEntity<Map<String, Object>> getTotalAcceptedTokens(@RequestParam String userEmail) {
+        try {
+            // Fetch all transaction requests for the given userEmail
+            List<TransactionRequest> requests = distributorService.getTransactionRequestsByUserEmail(userEmail);
+
+            double totalAcceptedAmount = 0;
+
+            // Loop through requests to sum the accepted amounts
+            for (TransactionRequest request : requests) {
+                if (request.getStatus().equals("Accepted")) {
+                    totalAcceptedAmount += request.getAmount();
+                }
+            }
+
+            // Prepare the response
+            Map<String, Object> response = new HashMap<>();
+            response.put("tokenCreditedIdentifier", userEmail); // or any unique identifier you need
+            response.put("totalAcceptedAmount", totalAcceptedAmount);
+
+            return ResponseEntity.ok(response);
+
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+    }
 
 
 }
