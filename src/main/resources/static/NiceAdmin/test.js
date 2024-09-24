@@ -85,6 +85,7 @@ async function generateIdCard(event) {
       // Call the function on page load
       fetchUserName();
     });
+
     //--------------------------------Logout api ----------------------
     document.addEventListener("DOMContentLoaded", function() {
       // Add event listener to the logout button
@@ -94,3 +95,35 @@ async function generateIdCard(event) {
         window.location.href = '/login.html'; // Redirect to login page or any other page
       });
     });
+    //--------------------------------Toggle side abr anv  ----------------------
+
+(function() {
+    "use strict";
+
+    /**
+     * Easy selector helper function
+     */
+    const select = (el) => {
+        return document.querySelector(el.trim());
+    }
+
+    /**
+     * Easy event listener function
+     */
+    const on = (type, el, listener) => {
+        const element = select(el);
+        if (element) {
+            element.addEventListener(type, listener);
+        }
+    }
+
+    /**
+     * Sidebar toggle
+     */
+    if (select('.toggle-sidebar-btn')) {
+        on('click', '.toggle-sidebar-btn', function() {
+            select('body').classList.toggle('toggle-sidebar');
+        });
+    }
+})();
+//-------------------------------------------------------

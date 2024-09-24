@@ -1,13 +1,14 @@
-document.addEventListener('DOMContentLoaded', function() {
-    const userEmail = sessionStorage.getItem('userEmail');
-    document.getElementById('userEmail').innerText = userEmail;
-    document.getElementById('userEmail1').innerText = userEmail;});
-
 
 
 //---------------------------------- Table  Api -----------------------------------
 document.addEventListener("DOMContentLoaded", function() {
     const retailerTableBody = document.getElementById("retailerTableBody");
+
+    // Ensure retailerTableBody is not null
+    if (!retailerTableBody) {
+        console.error("Table body element not found.");
+        return;
+    }
 
     // Fetch ID Card history using the session data (userEmail)
     async function fetchIdCardHistory() {
@@ -21,6 +22,7 @@ document.addEventListener("DOMContentLoaded", function() {
         try {
             const response = await fetch(`http://localhost:8080/api/admin/retailer/idcard-history?retailerEmail=${encodeURIComponent(userEmail)}`);
             const data = await response.json();
+            console.log(data);  // Log the response data for debugging
 
             if (data.error) {
                 alert(`Error: ${data.error}`);
@@ -30,7 +32,7 @@ document.addEventListener("DOMContentLoaded", function() {
             // Clear existing table data
             retailerTableBody.innerHTML = "";
 
-            if (data.idCardHistory && data.idCardHistory.length > 0) {
+            if (data.idCardHistory && Array.isArray(data.idCardHistory) && data.idCardHistory.length > 0) {
                 // Populate table with the fetched ID card history details
                 data.idCardHistory.forEach(idCard => {
                     const row = document.createElement("tr");
@@ -44,15 +46,14 @@ document.addEventListener("DOMContentLoaded", function() {
                         <td>${idCard.businessName}</td>
                         <td>Success</td>
                         <td>${idCard.id}</td>
-                        <td>${new Date(idCard.creationDate).toLocaleString()}</td>
-                    `;
+                    `; // Changed to 5 columns as per the <thead>
                     retailerTableBody.appendChild(row);
                 });
             } else {
-                retailerTableBody.innerHTML = `<tr><td colspan="6">No ID cards found.</td></tr>`;
+                retailerTableBody.innerHTML = `<tr><td colspan="5">No ID cards found.</td></tr>`;
             }
 
-            // Initialize DataTable
+            // Initialize DataTable only after the table is populated
             new simpleDatatables.DataTable("#idCardTable", {
                 searchable: true,
                 fixedHeight: true,

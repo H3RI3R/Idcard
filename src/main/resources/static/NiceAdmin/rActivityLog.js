@@ -4,8 +4,36 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('userEmail1').innerText = userEmail;});
 
 
-//------------------------------------ ID card creation APi  ---------------------------------------
+//------------------------------------ Toggle nav bar  ---------------------------------------
+(function() {
+    "use strict";
 
+    /**
+     * Easy selector helper function
+     */
+    const select = (el) => {
+        return document.querySelector(el.trim());
+    }
+
+    /**
+     * Easy event listener function
+     */
+    const on = (type, el, listener) => {
+        const element = select(el);
+        if (element) {
+            element.addEventListener(type, listener);
+        }
+    }
+
+    /**
+     * Sidebar toggle
+     */
+    if (select('.toggle-sidebar-btn')) {
+        on('click', '.toggle-sidebar-btn', function() {
+            select('body').classList.toggle('toggle-sidebar');
+        });
+    }
+})();
 //---------------------------------- Activity  Api -----------------------------------
 document.addEventListener("DOMContentLoaded", function() {
     function maskPhoneNumber(details) {
