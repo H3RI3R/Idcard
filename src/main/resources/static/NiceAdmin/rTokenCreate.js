@@ -36,34 +36,37 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 
 //----------------------------------Fetch count creators retailer  Api ----------------------------------
-document.addEventListener('DOMContentLoaded', function() {
-    const adminEmail = sessionStorage.getItem('userEmail');
+function fetchDistributorName() {
+    // Step 1: Get the userEmail from session storage
+    const userEmail = sessionStorage.getItem('userEmail');
 
-    if (adminEmail) {
-        // Fetch the list of distributors
-        fetch(`http://localhost:8080/api/admin/distributor/list?adminEmail=${encodeURIComponent(adminEmail)}`)
+    if (userEmail) {
+        // Step 2: First API call to get the creatorEmail
+        fetch(`http://localhost:8080/api/admin/distributor/userInfo?email=${userEmail}`)
             .then(response => response.json())
             .then(data => {
-            // Assuming data is an array of distributors
-            const distributors = data || [];
+                const creatorEmail = data.creatorEmail;
 
-            // Calculate the number of distributors
-            const distributorCount = distributors.length;
-
-            // Update the sales card with the distributor count
-            document.getElementById('distributorCount').textContent = distributorCount;
-        })
+                // Step 3: Second API call to get the distributor's name using the creatorEmail
+                return fetch(`http://localhost:8080/api/admin/distributor/userInfo?email=${creatorEmail}`);
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Step 4: Set the distributor's name in the HTML
+                const distributorNameElement = document.getElementById('distributorName');
+                distributorNameElement.textContent = data.name;
+            })
             .catch(error => {
-            console.error('Error fetching distributor count:', error);
-            // Handle error case, possibly display 0
-            document.getElementById('distributorCount').textContent = '0';
-        });
+                console.error('Error fetching distributor name:', error);
+                document.getElementById('distributorName').textContent = 'Error';
+            });
     } else {
-        console.error('Admin email is not found in session storage.');
-        // Handle case where adminEmail is not present
-        document.getElementById('distributorCount').textContent = '0';
+        document.getElementById('distributorName').textContent = 'Email not found';
     }
-});
+}
+
+// Call the function when the page loads
+document.addEventListener('DOMContentLoaded', fetchDistributorName);
 //----------------------------------total Token  sales api  ----------------------------------
 document.addEventListener('DOMContentLoaded', function() {
     const userEmail = sessionStorage.getItem('userEmail');
@@ -159,4 +162,8 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 });
 
-//-------------------------------Request Tokens---------------------------------------------------------------------------
+//-------------------------------Go to PaymentPortalPage---------------------------------------------------------------------------
+function navigateToPaymentPortal(event) {
+    event.preventDefault(); // Prevent form submission behavior
+    window.location.href = 'rPaymentPortal.html'; // Navigate to the payment portal
+}
