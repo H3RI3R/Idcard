@@ -32,15 +32,139 @@
             </div>
             <button type="submit" class="login-button">Submit</button>
         </form>
+
+        <form id="otpForm" class="hidden">
+            <div class="input-group">
+                <label for="otp">Enter OTP</label>
+                <input type="text" id="otp" name="otp" required>
+            </div>
+            <button type="submit" class="login-button">Verify OTP</button>
+        </form>
+
+        <form id="resetPasswordForm" class="hidden">
+            <div class="input-group">
+                <label for="newPassword">Enter New Password</label>
+                <input type="password" id="newPassword" name="newPassword" required>
+            </div>
+            <div class="input-group">
+                <label for="confirmPassword">Re-enter New Password</label>
+                <input type="password" id="confirmPassword" name="confirmPassword" required>
+            </div>
+            <button type="submit" class="login-button">Reset Password</button>
+        </form>
     </div>
 </div>
-<script>
 
+<script>
     document.getElementById('forgotPasswordLink').addEventListener('click', function(event) {
         event.preventDefault();
         document.getElementById('forgotPasswordForm').classList.remove('hidden');
+        document.getElementById('loginForm').classList.add('hidden'); // Hide login form when showing forgot password
     });
 
+    // Handle forgot password form submission
+    document.getElementById('forgotPasswordForm').addEventListener('submit', function(event) {
+        event.preventDefault(); // Prevent the form from submitting the traditional way
+        const resetEmail = document.getElementById('resetEmail').value;
+
+        fetch('http://localhost:8080/api/forgot-password', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: `email=${encodeURIComponent(resetEmail)}`
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            alert(data.message || 'An error occurred while sending OTP.');
+            // Show OTP form after sending email
+            document.getElementById('forgotPasswordForm').classList.add('hidden');
+            document.getElementById('otpForm').classList.remove('hidden');
+        })
+        .catch(error => {
+            console.error('There was a problem with the fetch operation:', error);
+            alert('Failed to send OTP. Please try again.');
+        });
+    });
+
+    // Handle OTP form submission
+    document.getElementById('otpForm').addEventListener('submit', function(event) {
+        event.preventDefault(); // Prevent the form from submitting the traditional way
+        const resetEmail = document.getElementById('resetEmail').value; // Get the email used for OTP
+        const otp = document.getElementById('otp').value;
+
+        fetch('http://localhost:8080/api/verify-otp', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: `email=${encodeURIComponent(resetEmail)}&otp=${encodeURIComponent(otp)}`
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            alert(data.message || 'An error occurred while verifying OTP.');
+            if (data.message === "OTP verified successfully") {
+                // Show reset password form if OTP is verified
+                document.getElementById('otpForm').classList.add('hidden');
+                document.getElementById('resetPasswordForm').classList.remove('hidden');
+            }
+        })
+        .catch(error => {
+            console.error('There was a problem with the fetch operation:', error);
+            alert('Failed to verify OTP. Please try again.');
+        });
+    });
+
+    // Handle reset password form submission
+    document.getElementById('resetPasswordForm').addEventListener('submit', function(event) {
+        event.preventDefault(); // Prevent the form from submitting the traditional way
+        const resetEmail = document.getElementById('resetEmail').value; // Get the email used for OTP
+        const newPassword = document.getElementById('newPassword').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
+
+        if (newPassword !== confirmPassword) {
+            alert('Passwords do not match. Please try again.');
+            return;
+        }
+
+        fetch('http://localhost:8080/api/reset-password', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: `email=${encodeURIComponent(resetEmail)}&newPassword=${encodeURIComponent(newPassword)}`
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            alert(data.message || 'An error occurred while resetting the password.');
+            // Optionally redirect back to the login page
+            document.getElementById('resetPasswordForm').classList.add('hidden');
+            document.getElementById('loginForm').classList.remove('hidden');
+        })
+        .catch(error => {
+            console.error('There was a problem with the fetch operation:', error);
+            alert('Failed to reset password. Please try again.');
+        });
+    });
+
+
+
+   // -----------------------------------Loginbutton=----------------------------------
 
 
     document.getElementById('loginForm').addEventListener('submit', function(event) {
@@ -89,6 +213,5 @@
         });
     });
 </script>
-
 </body>
 </html>

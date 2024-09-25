@@ -31,4 +31,46 @@ public class UserController {
             return response;
         }
     }
+    @PostMapping("/forgot-password")
+    public Map<String, String> forgotPassword(@RequestParam String email) {
+        try {
+            userService.sendOtp(email);
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "OTP sent to email");
+            return response;
+        } catch (RuntimeException e) {
+            Map<String, String> response = new HashMap<>();
+            response.put("error", e.getMessage());
+            return response;
+        }
+    }
+
+    @PostMapping("/verify-otp")
+    public Map<String, String> verifyOtp(@RequestParam String email, @RequestParam String otp) {
+        boolean isValid = userService.verifyOtp(email, otp);
+        Map<String, String> response = new HashMap<>();
+        if (isValid) {
+            response.put("message", "OTP verified successfully");
+            // Optionally, redirect to password reset page or return a token
+        } else {
+            response.put("error", "Invalid OTP");
+        }
+        return response;
+    }
+    @PostMapping("/reset-password")
+    public Map<String,String> resetPass(@RequestParam String email , @RequestParam String newPassword){
+             try {
+                 userService.resetPassword(email, newPassword);
+
+                 Map<String, String> response = new HashMap<>();
+
+                 response.put("message", "Password has been successfully Updates");
+                 return response;
+             }catch (RuntimeException e){
+                 Map<String,String> response = new HashMap<>();
+                 response.put("error",e.getMessage());
+                 return response;
+             }
+
+    }
 }

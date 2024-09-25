@@ -1,21 +1,56 @@
 
   //----------------------------------Submit button Api -----------------------------------
-async function generateIdCard() {
-    // Fetch the HTML content from the API (no CORS issues as same domain is used)
-    const response = await fetch('http://localhost:8080/api/admin/retailer/view-id-card');
-    const htmlContent = await response.text();
+document.getElementById('idCardForm').addEventListener('submit', generateIdCard);
 
-    // Display the content in an iframe
-    const iframe = document.getElementById('previewFrame');
-    iframe.style.display = 'block'; // Show the iframe
-    iframe.srcdoc = htmlContent;    // Insert the HTML into the iframe
+async function generateIdCard(event) {
+    event.preventDefault(); // Prevent the default form submission
 
-    // Wait for the iframe to load, then trigger print
-    iframe.onload = function() {
-      iframe.contentWindow.focus();    // Focus on the iframe content
-      iframe.contentWindow.print();    // Open the print dialog
-    };
-  }
+    // Collect form data
+    const form = document.getElementById('idCardForm');
+    const formData = new FormData(form);
+
+    // Fetch retailerEmail from session storage
+    const retailerEmail = sessionStorage.getItem('userEmail'); // Assuming 'userEmail' is stored in session storage
+
+    // Add retailerEmail and correct emailAddress field to form data
+    if (retailerEmail) {
+        formData.append('retailerEmail', retailerEmail);
+    } else {
+        console.error("retailerEmail is not available in session storage.");
+        return; // Stop the process if retailerEmail is not found
+    }
+
+    // Check if you should append 'emailAddress' instead of 'email'
+    const email = formData.get('email');
+    formData.append('emailAddress', email); // Append it with the correct name
+
+    try {
+        // Send a POST request to the createIdCard API to generate the HTML content
+        const response = await fetch('http://localhost:8080/api/admin/retailer/createIdCard', {
+            method: 'POST',
+            body: formData
+        });
+
+        if (response.ok) {
+            const htmlContent = await response.text();
+
+            // Display the content in an iframe
+            const iframe = document.getElementById('previewFrame');
+            iframe.style.display = 'none'; // Show the iframe
+            iframe.srcdoc = htmlContent;    // Insert the HTML into the iframe
+
+            // Wait for the iframe to load, then trigger print
+            iframe.onload = function () {
+                iframe.contentWindow.focus();    // Focus on the iframe content
+                iframe.contentWindow.print();    // Open the print dialog
+            };
+        } else {
+            console.error("Failed to generate ID card:", response.statusText);
+        }
+    } catch (error) {
+        console.error("Error generating ID card:", error);
+    }
+}
   //----------------------------------User name Api -----------------------------------
 
     document.addEventListener("DOMContentLoaded", function() {
@@ -50,6 +85,7 @@ async function generateIdCard() {
       // Call the function on page load
       fetchUserName();
     });
+
     //--------------------------------Logout api ----------------------
     document.addEventListener("DOMContentLoaded", function() {
       // Add event listener to the logout button
@@ -59,3 +95,35 @@ async function generateIdCard() {
         window.location.href = '/login.html'; // Redirect to login page or any other page
       });
     });
+    //--------------------------------Toggle side abr anv  ----------------------
+
+(function() {
+    "use strict";
+
+    /**
+     * Easy selector helper function
+     */
+    const select = (el) => {
+        return document.querySelector(el.trim());
+    }
+
+    /**
+     * Easy event listener function
+     */
+    const on = (type, el, listener) => {
+        const element = select(el);
+        if (element) {
+            element.addEventListener(type, listener);
+        }
+    }
+
+    /**
+     * Sidebar toggle
+     */
+    if (select('.toggle-sidebar-btn')) {
+        on('click', '.toggle-sidebar-btn', function() {
+            select('body').classList.toggle('toggle-sidebar');
+        });
+    }
+})();
+//-------------------------------------------------------

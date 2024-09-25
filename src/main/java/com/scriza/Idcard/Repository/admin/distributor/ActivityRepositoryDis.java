@@ -10,4 +10,7 @@ import java.util.List;
 @Repository
 public interface ActivityRepositoryDis extends JpaRepository<ActivityDis, Long> {
     List<ActivityDis> findByUserEmailOrderByTimestampDesc(String userEmail);
+
+        List<ActivityDis> findByUserEmail(String userEmail);
+
 }

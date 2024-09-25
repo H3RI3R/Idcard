@@ -29,7 +29,9 @@
 
     <!-- Template Main CSS File -->
     <link href="assets/css/style.css" rel="stylesheet">
+<style>
 
+</style>
     <!-- =======================================================
     * Template Name: NiceAdmin
     * Template URL: https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/
@@ -123,6 +125,12 @@
                 <span>Dashboard</span>
             </a>
         </li><!-- End Dashboard Nav -->
+        <li class="nav-item">
+            <a class="nav-link collapsed" href="rPaymentPortal.html">
+                <i class="bi bi-credit-card"></i>
+                <span>Payment Portal</span>
+            </a>
+        </li>
 
 
 
@@ -275,11 +283,9 @@
                                         <i class="bi bi-people"></i>
                                     </div>
                                     <div class="ps-3">
-                                        <h6 id = "distributorCount">0</h6>
-
+                                        <h6 id="distributorName" >Loading...</h6>
                                     </div>
                                 </div>
-
                             </div>
                         </div>
 
@@ -287,21 +293,16 @@
 
 
 
-                    <div class="col-lg-10">
+                    <div class="col-lg-4">
                         <div class="card">
                             <div class="card-body">
                                 <h5 class="card-title">Request Tokens</h5>
                                 <form id="CreateTokenForm">
-                                    <div class="row mb-3">
-                                        <label for="inputAmount" class="col-sm-2 col-form-label">Amount</label>
-                                        <div class="col-sm-10">
-                                            <input type="number" class="form-control" id="inputAmount" placeholder="Enter Token Amount" required>
-                                        </div>
-                                    </div>
+
                                     <div class="row mb-3">
                                         <label class="col-sm-2 col-form-label"></label>
                                         <div class="col-sm-10">
-                                            <button type="submit" class="btn btn-primary">Request Tokens</button>
+                                            <button type="button" class="btn btn-dark" onclick="navigateToPaymentPortal(event)">Request Tokens</button>
                                         </div>
                                     </div>
                                 </form>
