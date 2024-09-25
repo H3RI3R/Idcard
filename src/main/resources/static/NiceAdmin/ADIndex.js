@@ -377,115 +377,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 //----------------- (Token html Send Api )-------------------------------------------
-document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('sendTokenForm').addEventListener('submit', function(event) {
-        event.preventDefault();
-        const recipientEmail = document.getElementById('inputEmail').value;
-        const tokenAmount = document.getElementById('inputAmount').value;
-        const sessionEmail = sessionStorage.getItem('userEmail'); // Replace with actual session retrieval method
 
-        // Step 1: Fetch sender's phone number
-        fetch(`http://localhost:8080/api/admin/token/getWalletAddress?email=${encodeURIComponent(sessionEmail)}`)
-            .then(response => response.json())
-            .then(senderData => {
-            if (senderData && senderData.phoneNumber) {
-                const senderPhoneNumber = senderData.phoneNumber;
-
-                // Step 2: Fetch recipient information
-                fetch(`http://localhost:8080/api/admin/distributor/userInfo?email=${encodeURIComponent(recipientEmail)}`)
-                    .then(response => response.json())
-                    .then(recipientData => {
-                    if (recipientData && recipientData.email) {
-                        const recipientPhoneNumber = recipientData.phoneNumber;
-
-                        // Step 3: Fetch recipient's token amount
-                        fetch(`http://localhost:8080/api/admin/token/count?identifier=${encodeURIComponent(recipientPhoneNumber)}`)
-                            .then(response => response.json())
-                            .then(tokenData => {
-                            if (tokenData && tokenData.tokenCount !== undefined) {
-                                // Step 4: Display recipient information and token amount
-                                const retailerTableBody = document.getElementById('retailerTableBody');
-                                retailerTableBody.innerHTML = ''; // Clear previous content
-
-                                const row = document.createElement('tr');
-                                row.innerHTML = `
-                                                <td>${recipientData.id || 'N/A'}</td>
-                                                <td>${recipientData.name || 'N/A'}</td>
-                                                <td>${recipientData.email}</td>
-                                                <td>${recipientData.company || 'N/A'}</td>
-                                                <td>${tokenData.tokenCount}</td>
-                                                <td>${recipientData.phoneNumber || 'N/A'}</td>
-                                            `;
-                                retailerTableBody.appendChild(row);
-
-                                // Show the confirmation section
-                                document.getElementById('confirmationSection').style.display = 'block';
-
-                                // Step 5: Handle token sending on confirmation
-                                document.getElementById('confirmSend').addEventListener('click', function() {
-                                    fetch('http://localhost:8080/api/admin/token/send', {
-                                        method: 'POST',
-                                        headers: {
-                                            'Content-Type': 'application/x-www-form-urlencoded'
-                                        },
-                                        body: new URLSearchParams({
-                                            'senderIdentifier': senderPhoneNumber,
-                                            'amount': tokenAmount,
-                                            'recipient': recipientPhoneNumber
-                                        })
-                                    })
-                                        .then(response => response.json())
-                                        .then(sendResponse => {
-                                        if (sendResponse.message) {
-                                            alert(sendResponse.message);
-                                            location.reload();
-                                        } else {
-                                            alert(sendResponse.error || 'Failed to send tokens');
-                                        }
-                                        // Reset form and hide confirmation section
-                                        resetFormAndHideConfirmation();
-                                    })
-                                        .catch(error => {
-                                        console.error('Error sending tokens:', error);
-                                        alert('Failed to send tokens');
-                                    });
-                                });
-
-                                // Handle cancellation
-                                document.getElementById('cancelSend').addEventListener('click', function() {
-                                    resetFormAndHideConfirmation();
-                                });
-                            } else {
-                                alert('Failed to fetch recipient token amount');
-                            }
-                        })
-                            .catch(error => {
-                            console.error('Error fetching token amount:', error);
-                            alert('Failed to fetch recipient token amount');
-                        });
-                    } else {
-                        alert('Recipient not found');
-                    }
-                })
-                    .catch(error => {
-                    console.error('Error fetching recipient data:', error);
-                    alert('Failed to fetch recipient data');
-                });
-            } else {
-                alert('Sender phone number not found');
-            }
-        })
-            .catch(error => {
-            console.error('Error fetching sender data:', error);
-            alert('Failed to fetch sender data');
-        });
-    });
-
-    function resetFormAndHideConfirmation() {
-        document.getElementById('sendTokenForm').reset();
-        document.getElementById('confirmationSection').style.display = 'none';
-    }
-});
 //---------------------------------- Activity  Api -----------------------------------
 document.addEventListener('DOMContentLoaded', function() {
     const userEmail = sessionStorage.getItem('userEmail');
@@ -711,59 +603,15 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 //---------------------------------- Alert & gneerate QR code Function  ----------------------------------
-function generateQRCode() {
-    // Get the selected plan amount
-    var amount = document.getElementById('selectPlan').value;
 
-    // Receiver's UPI ID
-    var upiID = "ritiksoni101@ybl";
 
-    // Construct the UPI Payment URL
-    var upiUrl = `upi://pay?pa=${upiID}&pn=Ritik&am=${amount}&cu=INR`;
-
-    // Clear any previous QR code
-    document.getElementById("qrcode").innerHTML = "";
-
-    // Generate the QR Code
-    var qrcode = new QRCode(document.getElementById("qrcode"), {
-        text: upiUrl,
-        width: 200,  // QR Code width
-        height: 200, // QR Code height
-    });
-}
-
-// Event listener for Done button
-document.getElementById('doneButton').addEventListener('click', function() {
-    // Get the selected plan text
-    var selectedPlan = document.querySelector('select[name="amount"] option:checked').textContent;
-
-    // Get the transaction ID
-    var transactionID = document.getElementById('transactionID').value;
-
-    // Validate transaction ID input
-    if (transactionID === '') {
-        alert('Please enter the transaction ID.');
-        return;
-    }
-
-    // Construct the alert message
-    var alertMessage = `Your request for the <strong>${selectedPlan}</strong> has been sent. Please wait while we process. Or check your status from <a href="ADTokenReport.html" class="alert-link">here</a>.`;
-
-    // Display the alert with the message
-    document.getElementById('alertMessage').innerHTML = alertMessage;
-    document.getElementById('paymentAlert').classList.remove('d-none');
-
-    // Hide the modal
-    var paymentModal = bootstrap.Modal.getInstance(document.getElementById('paymentModal'));
-    paymentModal.hide();
-});
 //----------------------------------Logout Api ----------------------------------
 
-document.addEventListener("DOMContentLoaded", function() {
-// Add event listener to the logout button
-document.getElementById('logoutBtn').addEventListener('click', function(event) {
-event.preventDefault(); // Prevent the default link behavior
-sessionStorage.clear(); // Clear session storage
-window.location.href = '/login.html'; // Redirect to login page or any other page
-});
-});
+  document.addEventListener("DOMContentLoaded", function() {
+    // Add event listener to the logout button
+    document.getElementById('logoutBtn').addEventListener('click', function(event) {
+      event.preventDefault(); // Prevent the default link behavior
+      sessionStorage.clear(); // Clear session storage
+      window.location.href = '/login.html'; // Redirect to login page or any other page
+    });
+  });
