@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
     <link href="loginStyle.css" rel="stylesheet" type="text/css">
+
 </head>
 <body>
 <div class="container">
@@ -147,13 +148,260 @@
         .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
-            }
+            }d
             return response.json();
         })
         .then(data => {
             alert(data.message || 'An error occurred while resetting the password.');
-            // Optionally redirect back to the login page
-            document.getElementById('resetPasswordForm').classList.add('hidden');
+            // Optionally redirect back to the login page<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link href="assets/css/loginStyle.css" rel="stylesheet" type="text/css">
+
+</head>
+<body style="background-color: springgreen; ">
+    <div class="container">
+        <div class="image-container">
+            <img src="https://images.pexels.com/photos/2033997/pexels-photo-2033997.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500" alt="Background Image">
+        </div>
+        <div class="form-container" style="background-color: aquamarine;">
+            <button type="button" id="backToLogin" class="btn btn-secondary" style="display: none;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"/>
+                </svg>
+            </button>
+
+            <!-- Sign In Heading -->
+             <h1 class="headingh1"> #Wealth</h1>
+            <h2 id="loginTitle" class="login-title">Sign in</h2>
+
+            <!-- Sign Up Heading -->
+            <h2 id="signUpTitle" class="login-title hidden">Sign Up</h2>
+
+            <!-- Login Form -->
+            <form id="loginForm">
+                <div class="input-group">
+                    <input  id="email" name="email" placeholder="Email" >
+                </div>
+                <div class="input-group">
+                    <input type="password" id="password" name="password" placeholder="Password" required>
+                </div>
+                <button type="submit" class="btn btn-dark login-button" onclick="login(event)">Login</button>
+                <a href="#" id="forgotPasswordLink">Forgot your password?</a>
+                <p>
+                    Need an account? <a href="#" id="signUpLink" class="text-reset">Sign up here</a>
+                </p>
+            </form>
+
+            <!-- Forgot Password Form -->
+            <form id="forgotPasswordForm" class="hidden">
+                <div class="input-group">
+                    <label for="resetEmail">Enter your email</label>
+                    <input type="email" id="resetEmail" name="resetEmail" required>
+                </div>
+                <button type="submit" class="login-button">Submit</button>
+            </form>
+
+            <!-- OTP Form -->
+            <form id="otpForm" class="hidden">
+                <div class="input-group">
+                    <label for="otp">Enter OTP</label>
+                    <input type="text" id="otp" name="otp" required>
+                </div>
+                <button type="submit" class="login-button">Verify OTP</button>
+            </form>
+
+            <!-- Reset Password Form -->
+            <form id="resetPasswordForm" class="hidden">
+                <div class="input-group">
+                    <label for="newPassword">Enter New Password</label>
+                    <input type="password" id="newPassword" name="newPassword" required>
+                </div>
+                <div class="input-group">
+                    <label for="confirmPassword">Re-enter New Password</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" required>
+                </div>
+                <button type="submit" class="login-button">Reset Password</button>
+            </form>
+
+            <!-- Sign-Up Form -->
+            <form id="signUpForm">
+                <h2 class="login-title">Sign Up</h2>
+                <div class="input-group">
+                    <input type="text" id="signupName" name="name" placeholder="Your Name" required>
+                </div>
+                <div class="input-group">
+                    <input type="email" id="signupEmail" name="email" placeholder="Email" required>
+                </div>
+                <div class="input-group">
+                    <input type="password" id="signupPassword" name="password" placeholder="Password" required>
+                </div>
+                <button type="button" class="btn btn-dark login-button" onclick="register()">Sign Up</button>
+                <p>
+                    Already have an account? <a href="#" id="backToLoginLink" class="text-reset">Login here</a>
+                </p>
+            </form>
+        </div>
+    </div>
+    <div id="alertBox" class="alert" role="alert" style="display: none;"></div>
+
+    <script>
+        document.getElementById('forgotPasswordLink').addEventListener('click', function(event) {
+            event.preventDefault();
+            document.getElementById('forgotPasswordForm').classList.remove('hidden');
+            document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('backToLogin').style.display = 'block';
+        });
+
+        document.getElementById('backToLogin').addEventListener('click', function() {
+            document.getElementById('forgotPasswordForm').classList.add('hidden');
+            document.getElementById('loginForm').classList.remove('hidden');
+            document.getElementById('signUpForm').classList.add('hidden');
+            document.getElementById('loginTitle').classList.remove('hidden');
+            document.getElementById('signUpTitle').classList.add('hidden');
+            document.getElementById('backToLogin').style.display = 'none';
+        });
+
+        // Show sign-up form
+        document.getElementById('signUpLink').addEventListener('click', function(event) {
+            event.preventDefault();
+            document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('signUpForm').classList.remove('hidden');
+            document.getElementById('loginTitle').classList.add('hidden');
+            document.getElementById('signUpTitle').classList.remove('hidden');
+            document.getElementById('backToLogin').style.display = 'block';
+        });
+
+        // Back to login from sign-up
+        document.getElementById('backToLoginLink').addEventListener('click', function(event) {
+            event.preventDefault();
+            document.getElementById('signUpForm').classList.add('hidden');
+            document.getElementById('loginForm').classList.remove('hidden');
+            document.getElementById('loginTitle').classList.remove('hidden');
+            document.getElementById('signUpTitle').classList.add('hidden');
+            document.getElementById('backToLogin').style.display = 'none';
+        });
+
+function login(){
+    let userName = document.getElementById("email").value;  // Get the value of the email input
+    let userPassword = document.getElementById("password").value;
+    alert("Input value: " + userName+" "+userPassword);
+}
+//-------------------------------------Show alert ----------------------------------------
+// Function to show Bootstrap alerts dynamically
+function showAlert(message, type) {
+    const alertBox = document.getElementById('alertBox');
+    alertBox.className = `alert alert-${type}`;  // Sets the appropriate Bootstrap alert class (e.g., alert-success)
+    alertBox.innerHTML = message;
+    alertBox.style.display = 'block';
+
+    // Hide the alert automatically after 5 seconds
+    setTimeout(() => {
+        alertBox.style.display = 'none';
+    }, 5000);
+}
+
+//-------------------------------------request Handling  ----------------------------------------
+
+// Function to handle POST requests with error handling
+async function makePostRequest(url, body) {
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(body)
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Something went wrong');
+        }
+
+        return await response.json();  // Return the JSON response if successful
+    } catch (error) {
+        throw error;  // Re-throw to be handled by the calling function
+    }
+}
+//-------------------------------------Login API----------------------------------------
+// Adjusted login function
+async function login() {
+    let userName = document.getElementById("email").value;
+    let password = document.getElementById("password").value;
+
+    // API body
+    const loginData = {
+        userName: userName,  // Change from email to userName for the API
+        password: password
+    };
+
+    try {
+        // Make the login API call
+        const response = await fetch('http://localhost:8080/authenticate', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(loginData)
+        });
+
+        if (!response.ok) {
+            throw new Error('Login failed');
+        }
+
+        // Since the response is a plain text JWT, use .text() instead of .json()
+        const token = await response.text();
+
+        // Store the token in localStorage
+        localStorage.setItem('authToken', token);
+
+        // Redirect to the index.html page after successful login
+        window.location.href = 'index.html';
+
+    } catch (error) {
+        // Show error alert
+        showAlert(error.message, 'danger');
+    }
+}
+//-------------------------------------Register API----------------------------------------
+async function register() {
+    let userName = document.getElementById("signupName").value;
+    let email = document.getElementById("signupEmail").value;
+    let password = document.getElementById("signupPassword").value;
+
+    // API body
+    const registerData = {
+        userName: userName,
+        email: email,
+        password: password,
+        role: 'USER'
+    };
+
+    try {
+        // Make the registration API call
+        const response = await makePostRequest('http://localhost:8080/register', registerData);
+
+        // Show success message
+        showAlert('User has been registered successfully', 'success');
+
+        // Optionally redirect to login page after registration
+        setTimeout(() => {
+            window.location.href = 'login.html';
+        }, 3000);  // Wait 3 seconds before redirect
+    } catch (error) {
+        // Show error alert
+        showAlert(error.message, 'danger');
+    }
+}
+</script>
+</body>
+</html>
+
+document.getElementById('resetPasswordForm').classList.add('hidden');
             document.getElementById('loginForm').classList.remove('hidden');
         })
         .catch(error => {
@@ -161,9 +409,29 @@
             alert('Failed to reset password. Please try again.');
         });
     });
-
-
-
+<!--//now i have created this wealth project in this i will be making a user registration where user will only be-->
+<!--going to add his details (UserName  , email , password) from this in the database there will automatically created-->
+<!--userId(Primary key ) , DailyWithdrawal  , planName ,totalWithdrawal , totalDeposit ,WithdrawableAmount , LockedAmount-->
+<!--, PaymentDetails(BankAccount/Upi Account) , BankAccountNumber , BankAccountName , BankAccountIFSC , BankAccountStatus ,-->
+<!--,UpiAccountID , UpiAccountNumber , UpiAccountPlatform , UpiAccountStatus . this is everything in the initial way will-->
+<!--be empty or 0 ,as the user goes by and entering his details and also make plans or deposites and withdrawalRequests-->
+<!--all the datafields will be fill according to that now i will be differentiate the table for each module like for the-->
+<!--Bank details #userID (Foreign key ) if he selected bankAccount then he will enter bankAccountName , BankAccountNumber, BankAccountIFSC ,BankAccountId ,BankAccountStatus-->
+<!--if UpiAccount Selected  , #userID (foreign key)  , UpiAccountID , UpiAccountNumber , UpiAccountPlatform ,UpiAccountStatus-->
+<!--now in the WalletTable $userID(Foreign key)  , WithdrawableAmount , LockedAmount , walletId (primary) (created for each user)-->
+<!--now in the PlansTable #userId(Foreign key) , planID (primary),  planAmount , DailyWithdrawal  , PlanName (set by admin to the user to pick plans)-->
+<!--now in the withdrawalTable #userID(Foreign key) , WithdrawableAmount ,WithdrawAmount, UpiAccountID(if Upi selected)orBankAccountId(if BankAccount selected) ,-->
+<!--withdrawalId(primary) , paymentStatus(accepted / rejected / pending) , totalWithdrawal (withdrawal request done by user to the Admin and admin can change status if accept or not )-->
+<!--now in the depositTable #userID(Foreign key)  , planId (foreign key), depositStatus(success/failure) ,totalDeposit , depositId(primary) , date (here all the deposit to the wallet )-->
+<!--now in the transactionalRecord #userID , depositId(foreign ) , withdrawalId(foreign) (here all the transection will be recorded)-->
+<!--now there will be admin also which can edit these and details now i will be creating the project in spring boot using this now how the database will be -->
+<!--declared and how i will be start working in the spring boot using this details-->
+<!--about the project that user will be investing his money like he is buying the plan whihc is silver where 10,000rs should be deposited first and then -->
+<!--daily the user can withdraw 100rs (this plan is created by admin can see each user ) and that deposited ammount will be locked for 1 month (that will also be done by admin)-->
+<!--and in the wallet he can see his daily earning and total withdrawable amount which he can withdraw anytime like after 1 amount (means 30 days ) his total drawaable amount will be -->
+<!--3000rs +10,000rs (that means 13000) rs he can send the request to amdin for approval for the withdraw then if admin accepts then status changes -->
+<!--user can pourchase many plans at a time and in the user dashbaord he can see his daily earning (means daily withdrwal ) and locked deposites total withdrawable amount-->
+<!--and in the admin he can see total daily deposit  , total credit (by user who purchased the plan ) total active user (active iwll be checked by if he purchased any plans in the history or not )-->
    // -----------------------------------Loginbutton=----------------------------------
 
 
